@@ -25,10 +25,13 @@ function SettingsWindow() {
       <div 
       onClick={hideSettingsOption}
       className="p-2 ml-[-15px] text-2xl cursor-pointer hide-chat-window-button">
-        <IoClose/>
+       <IoClose/>
       </div>
       
-      {selectedCurrentSettings.type === "account" && (<Account/>)}
+      {selectedCurrentSettings.type === "account" && (
+        <Account/>
+      )}
+
       {selectedCurrentSettings.type === "privacy" && (
         <div>
           <h3 className="text-2xl font-bold">Privacy & Security</h3>

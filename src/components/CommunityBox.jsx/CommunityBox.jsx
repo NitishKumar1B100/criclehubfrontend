@@ -16,7 +16,7 @@ const CommunityBox = ({ items, setComSetting, comSetting, setAddFriend, setAddFr
 
     const handleSelectCommunity = (e) => {
         e.stopPropagation()
-        setSelectedCommunity(prev => ({ ...prev, id: items.id, name: items.name }))
+        setSelectedCommunity(prev => ({ ...prev, id: items.id, name: items.name}))
     }
 
     const handleAddFriendShow = (e) => {

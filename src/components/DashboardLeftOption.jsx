@@ -1,12 +1,14 @@
 import { useDashboard } from '../contexts/DashboardLeftcontext';
 import { useLogin } from '../contexts/LoginCreadentialContext';
 import { useLoginPopUp } from '../contexts/Loginpopup/Loginpopup';
+import { usePhoneChat } from '../contexts/PhoneChatContext';
 
 
 const DashboardLeftOption = ({ children, type }) => {
     const { activeOption, setActiveOption } = useDashboard();
     const { setLoginPopUp } = useLoginPopUp()
     const { LoginData} = useLogin()
+    const {setSelectedPhoneChat} = usePhoneChat()
     
       const handleSelectType = () => {
         if(LoginData === null){
@@ -14,6 +16,7 @@ const DashboardLeftOption = ({ children, type }) => {
             return 
         }
         setActiveOption(type)
+        setSelectedPhoneChat(false)
         
       }
     return (
