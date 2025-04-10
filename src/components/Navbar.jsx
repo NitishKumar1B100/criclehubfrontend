@@ -8,7 +8,11 @@ import { toast } from "react-toastify";
 
 
 
-const  Logout = ({setShowDetails, LoginData, showDetails, handleLogout}) => {
+const  Logout = ({setShowDetails, LoginData, showDetails, handleLogout, imageUrl}) => {
+
+  
+
+  
   return(
     <div>
     <div
@@ -24,7 +28,7 @@ const  Logout = ({setShowDetails, LoginData, showDetails, handleLogout}) => {
     <div className="">
       {showDetails && (
         <div className="absolute bg-gray-600 right-[-30px] top-[47px] transform -translate-x-1/2 mt-2 text-white p-3 rounded shadow-lg flex flex-col items-center">
-          <span className="text-sm">{LoginData.displayName ? LoginData.displayName : ''}</span>
+          <span className="text-sm">{imageUrl? imageUrl: ''}</span>
           <button
             onClick={handleLogout}
             className="mt-2 px-3 cursor-pointer py-1 bg-red-500 text-white rounded text-sm"
@@ -43,7 +47,7 @@ function Navbar() {
 
   const { LoginData, setLoginData } = useLogin()
   const [showDetails, setShowDetails] = useState(false);
-
+  const [imageUrl, setImageUrl] = useState('')
 
   const handleLogout = async () => {
     try {
@@ -58,6 +62,11 @@ function Navbar() {
     const unsubscribe = onAuthStateChanged(
       auth,
       (currentUser) => {
+        const providerInfo = currentUser.providerData.find(
+          (provider) => provider.providerId === "google.com"
+        );
+        setImageUrl(providerInfo.displayName)
+        
         setLoginData(currentUser);
       },
       (error) => {
@@ -99,7 +108,7 @@ function Navbar() {
             </div>
           </div>
           {!LoginData ? (<Login />)
-          :(<Logout setShowDetails={setShowDetails} LoginData={LoginData} 
+          :(<Logout setShowDetails={setShowDetails} LoginData={LoginData} imageUrl={imageUrl}
           showDetails={showDetails} handleLogout={handleLogout}/>)}
         </div>
       </div>

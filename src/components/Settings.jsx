@@ -8,7 +8,7 @@ const Settings = () => {
   const {setSelectedPhoneChat } = usePhoneChat()
 
   const settingsTabs = [
-    { id: "account", name: "Account Settings" },
+    { id: "account", name: "Account" },
     { id: "privacy", name: "Privacy & Security" },
     { id: "danger", name: "Danger Zone" },
   ];

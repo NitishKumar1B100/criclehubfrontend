@@ -67,9 +67,9 @@ function RoompeopleBox({roomInfo, person, friendList, following, LoginUser }) {
       
     return (
         <div
-            className={` w-full h-full `}>
+            className={` w-[150px] h-full ${(isFreindList)  ? "border-blue-700 border-2" : "bg-gray-900"}  inline-block rounded p-1`}>
 
-            <div className={`w-[150px] h-full p-1 inline-block overflow-x-auto scrollbar-hide rounded ${(isFreindList)  ? "border-blue-700 border-2" : "bg-gray-900"}`}>
+            <div className={`w-full h-full `}>
                 <div
                     className={`relative aspect-square
                   rounded bg-center bg-cover bg-no-repeat 

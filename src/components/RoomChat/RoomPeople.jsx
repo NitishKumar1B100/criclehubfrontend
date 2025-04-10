@@ -54,14 +54,14 @@ const RoomPeople = ({ peoples, roomInfo, LoginUser }) => {
   }, [peoples]);  // Runs whenever peoples changes
 
   return (
-    <div className="w-full h-full
+    <div className="w-full h-[150px]
       bg-gray-800 rounded p-4 
       flex flex-row gap-4 items-center justify-center
       ">
       
       {people.length ? (people.map((person, index) => {
         return (
-          <div key={index} className={``}>
+          <div key={index} className={`h-[150px]`}>
             <RoompeopleBox 
               person={person} 
               roomInfo={roomInfo} 

@@ -1,7 +1,8 @@
-import { FaChevronLeft } from 'react-icons/fa';
 import { useCurrentSettings } from '../../contexts/CurrentSettingsContext';
 import { usePhoneChat } from '../../contexts/PhoneChatContext';
 import DefaultChat from './DefaultChat';
+import Account from '../SettingOptions/Account';
+import { IoClose } from "react-icons/io5";
 
 function SettingsWindow() {
     
@@ -24,15 +25,10 @@ function SettingsWindow() {
       <div 
       onClick={hideSettingsOption}
       className="p-2 ml-[-15px] text-2xl cursor-pointer hide-chat-window-button">
-        <FaChevronLeft/>
+        <IoClose/>
       </div>
       
-      {selectedCurrentSettings.type === "account" && (
-        <div>
-          <h3 className="text-2xl font-bold">Account Settings</h3>
-          <p>Change your username, email, or password.</p>
-        </div>
-      )}
+      {selectedCurrentSettings.type === "account" && (<Account/>)}
       {selectedCurrentSettings.type === "privacy" && (
         <div>
           <h3 className="text-2xl font-bold">Privacy & Security</h3>

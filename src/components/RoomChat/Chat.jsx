@@ -79,13 +79,18 @@ function Chat({ roomId, userId, roomInfo }) {
       
         const [uid, displayName] = user.uid.split("__");
       
-        setRemoteTracks((prev) => ({
-          ...prev,
-          [user.uid]: {
-            videoTrack: mediaType === "video" ? user.videoTrack : null,
-            displayName: displayName || `User ${uid}`,
-          },
-        }));
+        setRemoteTracks((prev) => {
+          const existing = prev[user.uid] || {};
+      
+          return {
+            ...prev,
+            [user.uid]: {
+              ...existing,
+              videoTrack: mediaType === "video" ? user.videoTrack : existing.videoTrack,
+              displayName: displayName || `User ${uid}`,
+            },
+          };
+        });
       
         if (mediaType === "audio" && user.audioTrack) {
           user.audioTrack.play();
@@ -96,10 +101,23 @@ function Chat({ roomId, userId, roomInfo }) {
       client.on("user-unpublished", (user, mediaType) => {
         setRemoteTracks((prev) => {
           const updated = { ...prev };
-          delete updated[user.uid];
-          return updated;
+          const userTrack = updated[user.uid];
+      
+          if (!userTrack) return prev;
+      
+          if (mediaType === "video") {
+            userTrack.videoTrack = null;
+          } else if (mediaType === "audio") {
+            // handle audio cleanup if needed
+          }
+      
+          return {
+            ...updated,
+            [user.uid]: userTrack,
+          };
         });
       });
+      
     };
 
     initAgora();
@@ -232,7 +250,7 @@ function Chat({ roomId, userId, roomInfo }) {
             )}
           </div>
 
-          <div className="w-full h-[250px] overflow-y-auto scrollbar-hide">
+          <div className="w-full">
             <RoomPeople LoginUser={userId} peoples={usersJoined} roomInfo={roomInfo} />
           </div>
 

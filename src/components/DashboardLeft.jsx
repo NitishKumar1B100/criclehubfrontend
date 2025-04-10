@@ -3,6 +3,7 @@ import { CgCommunity } from "react-icons/cg";
 // import { CiSettings } from "react-icons/ci";
 import DashboardLeftOption from './DashboardLeftOption';
 import DashboardLeftContentType from './DashboardLeftContentType';
+import { CiSettings } from "react-icons/ci";
 
 
 
@@ -23,10 +24,10 @@ function DashboardLeft() {
                 </div>
 
                 <div className="mb-2 flex flex-col gap-3 ">
-{/*                    
+                   
                         <DashboardLeftOption type={'settings'}>
                             <CiSettings />
-                        </DashboardLeftOption> */}
+                        </DashboardLeftOption>
                 </div>
             </div>
 

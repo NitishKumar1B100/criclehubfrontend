@@ -28,12 +28,17 @@ const signInWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, provider);
     const user = result.user;
+    console.log(user)
 
     const docRef = doc(db, "users", user.uid);
     const docSnap = await getDoc(docRef);
 
+    const providerInfo = user.providerData.find(
+      (provider) => provider.providerId === "google.com"
+    );
+    
     const userData = {
-      name: user.displayName,
+      name: providerInfo.displayName,
       image: user.photoURL,
       uid: user.uid,
     };
@@ -41,7 +46,7 @@ const signInWithGoogle = async () => {
     if (docSnap.exists()) {
       // User exists — update their name and image only
       await updateDoc(docRef, {
-        name: userData.name,
+        name: providerInfo.displayName,
         image: userData.image,
       });
     } else {
