@@ -1,0 +1,89 @@
+@import "tailwindcss";
+
+/* @theme {
+  --breakpoint-phone: 900px;
+  --breakpoint-dashboard: 200px;
+  --container-tablet: 900px;
+} */
+ body{
+  background-color: #1e2939;
+ }
+.hidesilder::-webkit-scrollbar{
+  inline-size: 0;
+  display: none;
+}
+.chat-panel{
+  width: 400px;
+  position: relative;
+}
+
+.chat-panel-show{
+  display: block;
+}
+
+.chat-panel-hide{
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .chat-panel {
+    height: 100vh;
+    right: 0;
+    top: 0;
+    position: absolute;
+  }
+}
+@media (min-width: 1024px) {
+  .chat-panel {
+    display: block;
+  }
+  .chat-panel-hide{
+    display: block;
+  }
+  
+}
+@media (max-width: 500px) {
+  .chat-panel {
+    width: 100%;
+  }
+}
+/* .background{
+  background-color: #000000af;
+} */
+
+@media (max-width: 720px) {
+  .show-chat-window {
+    width: 100%;
+    height: 100vh;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }.hide-chat-window {
+    width: 0;
+    height: 0;
+    position: absolute;
+    left: -100%;
+  }
+  
+  .dashboard-left{
+    width: 100%;
+    height: 100%;
+  }
+
+}
+
+
+@media (min-width:720px) {
+  .hide-chat-window-button{
+    display: none;
+  }
+  .room-boxes{
+  width: 330px;
+  }
+}
+
+@media (min-width:850px) {
+  .room-boxes{
+  width: 400px;
+  }
+}
