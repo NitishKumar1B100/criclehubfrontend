@@ -25,7 +25,7 @@ function Account() {
     if (!userData) {
         return (
             <div className="w-full h-full flex items-center justify-center text-white">
-                <Loadingscreen/>
+                <Loadingscreen />
             </div>
         );
     }
@@ -36,47 +36,55 @@ function Account() {
     const friendCount = followers.filter((follower) => following.includes(follower)).length;
 
     return (
-        <div className="w-full h-full p-4 text-white">
-            {/* Profile Card */}
-            <div className="w-full h-fullmax-w-md bg-gray-800 rounded-xl p-6 shadow-lg flex 
-            flex-col items-center gap-3 relative lg:flex-row">
-                <div className="w-full h-[50px] p-2 text-right absolute top-0 right-0">
-                    Since: 
-                </div>
-                <div className="">
-                    <img
-                        src={image}
-                        alt="Profile"
-                        className="w-54 h-54 rounded-full border-4 border-gray-600 mb-4"
-                    />
-                </div>
-
-                <div className="">
-                    <h2 className="w-full text-xl font-semibold text-center lg:text-left">{name}</h2>
-                    {/* Stats */}
-                    <div className="flex justify-around gap-5 w-full mt-6 text-sm sm:text-base">
-                        <div className="flex flex-col items-center">
-                            <span className="font-bold">{followers.length}</span>
-                            <span>Followers</span>
-                        </div>
-                        <div className="flex flex-col items-center">
-                            <span className="font-bold">{following.length}</span>
-                            <span>Following</span>
-                        </div>
-                        <div className="flex flex-col items-center">
-                            <span className="font-bold">{friendCount}</span>
-                            <span>Friends</span>
-                        </div>
-                        
-                        <div className="flex flex-col items-center">
-                            <span className="font-bold">{community.length}</span>
-                            <span>Community</span>
-                        </div>
-                    </div>
-                </div>
+        <div className="w-full h-full p-4 text-white flex flex-col">
+          {/* Profile Card */}
+          <div className="w-full h-full  max-h-[350px] bg-gray-800 rounded-xl p-6 shadow-lg flex flex-col lg:flex-row items-center gap-6 relative">
+            
+            {/* Since text */}
+            <div className="absolute top-2 right-4 text-[12px] text-gray-400">
+              Since:
             </div>
+   
+      
+            {/* Profile Image */}
+            <div className="flex-shrink-0">
+              <img
+                src={image}
+                alt="Profile"
+                className="w-42 h-42 rounded-full border-4 border-gray-600"
+              />
+            </div>
+      
+            {/* Info Area */}
+            <div className="flex-1 w-full">
+              <h2 className="text-xl font-semibold text-center lg:text-left">{name}</h2>
+      
+              {/* Stats Section */}
+              <div className="flex flex-wrap justify-center lg:justify-start gap-6 w-full mt-6 text-[12px] sm:text-base">
+                <div className="flex flex-col items-center min-w-[80px]">
+                  <span className="font-bold">{followers.length}</span>
+                  <span className="text-gray-300">Followers</span>
+                </div>
+                <div className="flex flex-col items-center min-w-[20px] sm:min-w-[80px]">
+                  <span className="font-bold">{following.length}</span>
+                  <span className="text-gray-300">Following</span>
+                </div>
+                <div className="flex flex-col items-center min-w-[20px] sm:min-w-[80px]">
+                  <span className="font-bold">{friendCount}</span>
+                  <span className="text-gray-300">Friends</span>
+                </div>
+                <div className="flex flex-col items-center min-w-[20px] sm:min-w-[80px]">
+                  <span className="font-bold">{community.length}</span>
+                  <span className="text-gray-300">Community</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <div className=""></div>
         </div>
-    );
+      );
+      
 }
 
 export default Account;
