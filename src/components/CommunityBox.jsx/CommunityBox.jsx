@@ -4,19 +4,24 @@ import { useLogin } from "../../contexts/LoginCreadentialContext";
 import { arrayRemove, doc, getDoc, updateDoc, writeBatch } from "firebase/firestore";
 import { db } from "../../utils/firebase";
 import { toast } from "react-toastify";
+import { usePhoneChat } from "../../contexts/PhoneChatContext";
 
 const CommunityBox = ({ items, setComSetting, comSetting, setAddFriend, setAddFriendComId }) => {
     const { selectedCommunity, setSelectedCommunity } = useCommunity()
     const { LoginData } = useLogin()
+    
+        const { setSelectedPhoneChat } = usePhoneChat();
 
     const handleShowsetting = (e) => {
         e.stopPropagation()
         setComSetting(prev => prev == items.id ? null : items.id)
+
     }
 
     const handleSelectCommunity = (e) => {
         e.stopPropagation()
         setSelectedCommunity(prev => ({ ...prev, id: items.id, name: items.name}))
+        setSelectedPhoneChat(true);
     }
 
     const handleAddFriendShow = (e) => {
