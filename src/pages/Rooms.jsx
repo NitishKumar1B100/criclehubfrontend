@@ -22,7 +22,7 @@ function Rooms() {
       setLoadingRooms(false);
       return; // Prevent running socket code if LoginData is null
     }
-    console.log(LoginData)
+
     const socket = getRoomSocket();
   
     const handleRoomList = (rooms) => {
@@ -30,7 +30,6 @@ function Rooms() {
         setRooms(rooms);
       } catch (err) {
         toast.error("Failed to update room list.");
-        console.error("Socket roomList error:", err);
       } finally {
         setLoadingRooms(false);
       }
@@ -54,14 +53,12 @@ function Rooms() {
         return true;
       } catch (err) {
         toast.error("Error verifying user. Try again later.");
-        console.error("checkUserExist error:", err);
         return false;
       }
     };
   
     const setupSocket = async () => {
       const userIsValid = await checkUserExist();
-      console.log(LoginData, userIsValid)
       if (!userIsValid) {
         setLoadingRooms(false);
         return; // Do not proceed if user is invalid
@@ -82,7 +79,7 @@ function Rooms() {
       try {
         socket.off("roomList", handleRoomList);
       } catch (err) {
-        console.error("Socket cleanup error:", err);
+        toast.error("Socket cleanup error:", err)
       }
     };
   }, [LoginData]); // Ensure LoginData is in the dependency list

@@ -9,8 +9,7 @@ import { doc, getDoc } from "firebase/firestore";
 
 const CreateRoom = ({ setFormPopUp }) => {
       const { LoginData } = useLogin()
-    
-      
+
       const [loading, setLoading] = useState(false)
       
       useEffect(()=>{

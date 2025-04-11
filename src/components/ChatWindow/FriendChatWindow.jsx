@@ -256,7 +256,6 @@ useEffect(() => {
   }, [LoginData?.uid, selectedFriend?.id]);
   
   const handleShowFriendDetails = async () => {
-    
     try{
       const id = selectedFriend.id
       const docRef = doc(db, 'users', id);
@@ -264,7 +263,6 @@ useEffect(() => {
       
       const {name, image, followers, following} = docSnap.data()
       setShowFriendDTLOBJ({name, image, followers:followers.length, following:following.length})  
-      console.log(showFriendDTLOBJ)
       
     setShowFriendDTL(prev => !prev)
     }catch(err){
@@ -273,7 +271,6 @@ useEffect(() => {
   }
   
   const handlecloseOFShowDTL = () => {
-    
     setShowFriendDTL(prev => !prev)
   }
   

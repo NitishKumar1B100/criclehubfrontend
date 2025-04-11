@@ -6,10 +6,7 @@ const Login = () => {
   const { LoginPopUp, setLoginPopUp } = useLoginPopUp()
 
   const handleLogin = async () => {  try {
-
-    
     await signInWithGoogle();
-
   } catch (error) {
     toast.error("Google sign-in failed. Please try again.");
   }
