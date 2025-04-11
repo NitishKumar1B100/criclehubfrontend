@@ -8,7 +8,6 @@ function DangerZone() {
 
     const handleLogout = async () => {
         await logout()
-        setLoginData(null);
     };
 
     const handleSwitchAccount = async () => {

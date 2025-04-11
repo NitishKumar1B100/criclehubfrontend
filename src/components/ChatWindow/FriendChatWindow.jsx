@@ -109,13 +109,12 @@ const SendFriendMsg = ({ FreindChatId, selectedFriend }) => {
             };
     
             const chatDocRef = doc(db, 'friendChat', FreindChatId);
-    
+  
+            setMessage('');
             await updateDoc(chatDocRef, {
                 messages: arrayUnion(newMessage),
                 lastUpdated: serverTimestamp(),
             });
-    
-            setMessage('');
         } catch (error) {
             toast.error("Error sending message. Please try again.");
         }

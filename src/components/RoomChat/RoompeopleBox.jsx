@@ -67,19 +67,18 @@ function RoompeopleBox({roomInfo, person, friendList, following, LoginUser }) {
       
     return (
         <div
-            className={` w-[150px] h-full ${(isFreindList)  ? "border-blue-700 border-2" : "bg-gray-900"}  inline-block rounded p-1`}>
+            className={`w-full h-full ${(isFreindList)  ? "border-blue-700 border-2" : "bg-gray-900"}  inline-block rounded p-1`}>
 
             <div className={`w-full h-full `}>
                 <div
-                    className={`relative aspect-square
-                  rounded bg-center bg-cover bg-no-repeat 
+                    className={`h-full w-full relative
+                  rounded bg-cover bg-center bg-no-repeat
                   flex items-center justify-center`}
-                    style={{ backgroundImage: `url(${person.userDetails.image})` ,
-                    backgroundSize: '50% 50%',
-
-                }}
+                  style={{backgroundImage:`url(${person.userDetails.image})`,
+                backgroundSize:'38% 50%'}}
                 >
-                    <div className="absolute left-0 bottom-0 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-sm">
+                  {/* <img src={`${person.userDetails.image}`} alt="" /> */}
+                    <div className="absolute left-0 bottom-0 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-[10px]">
                         {person.userDetails.name}
                     </div>
 

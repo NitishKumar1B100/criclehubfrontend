@@ -234,7 +234,7 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
   const goBackToHome = () => navigate("/room");
 
   return (
-    <div className="hidesilder h-screen flex bg-gray-900 text-white p-2 rounded relative">
+    <div className="hidesilder w-full h-screen flex bg-gray-900 text-white p-2 rounded relative">
       <div className="w-full h-full flex-1 bg-gray-900 flex flex-col gap-1">
         <div className="w-full h-full flex flex-col items-center justify-end gap-1">
           <div className="hidesilder w-full h-full overflow-y-auto">
@@ -251,7 +251,7 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
             )}
           </div>
 
-          <div className="w-full">
+          <div className="w-full h-[170px] overflow-x-auto">
             <RoomPeople LoginUser={userId} peoples={usersJoined} roomInfo={roomInfo} />
           </div>
 
@@ -270,7 +270,7 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
 
       <button
         onClick={() => setIsChatVisible(!isChatVisible)}
-        className="z-50 bottom-20 left-4 lg:hidden absolute bg-blue-500 p-2 rounded text-white"
+        className="cursor-pointer z-50 bottom-20 left-4 lg:hidden absolute bg-blue-500 p-2 rounded text-white"
       >
         <IoChatbubblesSharp size={25} />
       </button>

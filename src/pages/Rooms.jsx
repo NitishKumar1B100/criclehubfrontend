@@ -13,11 +13,16 @@ function Rooms() {
   const [rooms, setRooms] = useState([]); // Store rooms from Firestore
   const { setLoginPopUp } = useLoginPopUp()
   const { LoginData } = useLogin()
-
   const [LoadingRooms, setLoadingRooms] = useState(true)
 
+  
 
   useEffect(() => {
+    if (!LoginData) {
+      setLoadingRooms(false);
+      return; // Prevent running socket code if LoginData is null
+    }
+    console.log(LoginData)
     const socket = getRoomSocket();
   
     const handleRoomList = (rooms) => {
@@ -56,6 +61,7 @@ function Rooms() {
   
     const setupSocket = async () => {
       const userIsValid = await checkUserExist();
+      console.log(LoginData, userIsValid)
       if (!userIsValid) {
         setLoadingRooms(false);
         return; // Do not proceed if user is invalid
@@ -66,7 +72,6 @@ function Rooms() {
         socket.emit("getRoomList");
       } catch (err) {
         toast.error("Failed to connect to server.");
-        console.error("Socket connection error:", err);
         setLoadingRooms(false);
       }
     };
@@ -134,6 +139,3 @@ function Rooms() {
 }
 
 export default Rooms;
-
-
-

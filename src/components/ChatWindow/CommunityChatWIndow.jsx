@@ -88,17 +88,29 @@ const CommunityChatBox = ({ CommunityName, CommunityId }) => {
 
   const handleSendMessage = async () => {
     if (!currentMsg.trim() || !LoginData?.uid) return
+    
+    let userInf 
+
+    const googleProfile = LoginData.providerData.find(
+      (provider) => provider.providerId === "google.com"
+    );
+    if (googleProfile) {
+      userInf = {
+        name: googleProfile.displayName || '',
+        img: LoginData.photoURL || '',
+      }
+    }
 
     const messageData = {
       text: currentMsg,
       senderId: LoginData.uid,
-      senderName: LoginData.displayName || 'Anonymous',
+      senderName: userInf.name || 'Anonymous',
       createdAt: serverTimestamp()
     }
 
     try {
-      await addDoc(collection(db, 'community', CommunityId, 'messages'), messageData)
       setCurrentMsg('')
+      await addDoc(collection(db, 'community', CommunityId, 'messages'), messageData)
     } catch (err) {
       toast.error('Error sending message. Please try again.')
     }

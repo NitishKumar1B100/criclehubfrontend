@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import RoompeopleBox from './RoompeopleBox';
 import { doc, onSnapshot } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
@@ -10,6 +10,7 @@ const RoomPeople = ({ peoples, roomInfo, LoginUser }) => {
   
     const [friendList, setFriendList] = useState([]);
     const [following, setFollowing] = useState([]);
+    const scrollRef = useRef();
 
     useEffect(() => {
       if (!LoginUser || !LoginUser.uid) return;
@@ -52,27 +53,45 @@ const RoomPeople = ({ peoples, roomInfo, LoginUser }) => {
   useEffect(() => {
     setPeople(peoples);  // Update state with the new user list
   }, [peoples]);  // Runs whenever peoples changes
+  
+  useEffect(() => {
+    const el = scrollRef.current;
+    if (!el) return;
+
+    const onWheel = (e) => {
+      if (e.deltaY !== 0) {
+        e.preventDefault();
+        el.scrollLeft += e.deltaY;
+      }
+    };
+
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => el.removeEventListener('wheel', onWheel);
+  }, []);
 
   return (
-    <div className="w-full h-[150px]
-      bg-gray-800 rounded p-4 
-      flex flex-row gap-4 items-center justify-center
-      ">
-      
-      {people.length ? (people.map((person, index) => {
-        return (
-          <div key={index} className={`h-[150px]`}>
-            <RoompeopleBox 
-              person={person} 
-              roomInfo={roomInfo} 
-              friendList={friendList} 
-              following={following}
-              LoginUser={LoginUser}
-            />
-          </div>
-        );
-      })) : (<Loadingscreen/>)}
-    </div>
+    <div
+    ref={scrollRef}
+    className="w-full h-full bg-gray-800 rounded p-2 
+    flex flex-row gap-4 overflow-x-auto items-center justify-center hidesilder scroll-smooth "
+  >
+    {people.length ? (
+      people.map((person, index) => (
+        <div key={index} className="w-[160px] h-full flex-shrink-0 select-none">
+          <RoompeopleBox 
+            person={person} 
+            roomInfo={roomInfo} 
+            friendList={friendList} 
+            following={following}
+            LoginUser={LoginUser}
+          />
+        </div>
+      ))
+    ) : (
+      <Loadingscreen />
+    )}
+  </div>
+
   );
   
   
