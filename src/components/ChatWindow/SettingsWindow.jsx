@@ -4,6 +4,8 @@ import DefaultChat from './DefaultChat';
 import Account from '../SettingOptions/Account';
 import { IoClose } from "react-icons/io5";
 import { useLogin } from '../../contexts/LoginCreadentialContext';
+import DangerZone from '../SettingOptions/DangerZone';
+import PrivacyPolicy from '../SettingOptions/PrivacyPolicy';
 
 function SettingsWindow() {
     
@@ -30,10 +32,10 @@ function SettingsWindow() {
    
    :
    
-    ( <div className={`w-full p-6 text-white`}>
+    ( <div className={`w-full h-full p-6 text-white`}>
       <div 
       onClick={hideSettingsOption}
-      className="p-2 ml-[-15px] text-2xl cursor-pointer hide-chat-window-button">
+      className="p-2 ml-[-15px] text-3xl cursor-pointer hide-chat-window-button">
        <IoClose/>
       </div>
       
@@ -42,16 +44,10 @@ function SettingsWindow() {
       )}
 
       {selectedCurrentSettings.type === "privacy" && (
-        <div>
-          <h3 className="text-2xl font-bold">Privacy & Security</h3>
-          <p>Manage who can contact you, block users, and adjust data settings.</p>
-        </div>
+        <PrivacyPolicy/>
       )}
       {selectedCurrentSettings.type === "danger" && (
-        <div>
-          <h3 className="text-2xl font-bold text-red-500">Danger Zone</h3>
-          <p>Delete your account or reset settings.</p>
-        </div>
+        <DangerZone/>
       )}
     </div>)
    ) 

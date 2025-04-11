@@ -1,6 +1,6 @@
-import { NavLink } from "react-router-dom";
-import { auth, logout } from "../utils/firebase";
-import { useEffect, useState } from "react";
+import { NavLink, useNavigate } from "react-router-dom";
+import { auth } from "../utils/firebase";
+import { useEffect} from "react";
 import { useLogin } from "../contexts/LoginCreadentialContext";
 import { onAuthStateChanged } from "firebase/auth";
 import Login from "../components/Login/Login";
@@ -9,6 +9,9 @@ import { useDashboard } from "../contexts/DashboardLeftcontext";
 import { usePhoneChat } from "../contexts/PhoneChatContext";
 import { useCurrentSettings } from "../contexts/CurrentSettingsContext";
 
+
+import { MdDashboard, MdMeetingRoom } from "react-icons/md";
+
 function Navbar() {
 
   const { LoginData, setLoginData } = useLogin()
@@ -16,18 +19,19 @@ function Navbar() {
   const {setSelectedPhoneChat} = usePhoneChat()
   const {  setSelectedCurrentSettings } = useCurrentSettings();
   
+  const navigate = useNavigate();
+
 
   
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(
       auth,
       (currentUser) => {
-        if (currentUser) {
-          setLoginData(currentUser);
-        } else {
-          // User is logged out
+        if (!currentUser) {
           setLoginData(null);
+          return;
         }
+        setLoginData(currentUser);
       },
       (error) => {
         toast.error("Failed to track authentication state.");
@@ -38,60 +42,82 @@ function Navbar() {
   }, []);
   
   
+  
   const handleShowTheAccount = () => {
-    setActiveOption('settings')
-    setSelectedPhoneChat(false)
-    setSelectedCurrentSettings({ type: 'account'})
-    setSelectedPhoneChat(true)
+    setActiveOption('settings');
+    setSelectedPhoneChat(false);
+    setSelectedCurrentSettings({ type: 'account' });
+    setSelectedPhoneChat(true);
     
-  }
+    // Navigate to /room
+    navigate('/');
+  };
+  
   
   
   return (
-    <div className="w-screen h-[60px] bg-gray-800 ">
-      <div className="w-full h-full">
-        <div className="flex justify-between items-center h-full @container">
-          <div className="text-white font-bold text-[28px] p-2 ">CircleHub</div>
-          <div className=" w-[160px] flex justify-between items-center text-white ">
-            <div className="p-1 ">
-              <NavLink
-                to="/"
-                className={({ isActive }) =>
-                  isActive ? "text-blue-400 font-bold" : "text-white"
-                }
-              >
-                Dashboard
-              </NavLink>
-            </div>
+    <div className="w-screen h-[50px] bg-gray-800 sm:h-[60px]">
+  <div className="w-full h-full">
+    <div className="flex justify-between items-center h-full px-4">
 
-            <span className="text-[25px] mb-1">/</span>
-
-            <div className="p-1">
-              <NavLink
-                to="/room"
-                className={({ isActive }) =>
-                  isActive ? "text-blue-400 font-bold" : "text-white"
-                }
-              >
-                Rooms
-              </NavLink>
-            </div>
-          </div>
-          {!LoginData ? (<Login />)
-          :( <div
-    
-            className="relative w-[50px] h-[50px] mr-8 border border-white rounded-full cursor-pointer overflow-hidden"
-            onClick={ handleShowTheAccount}
-            >
-            <img src={LoginData.photoURL ? LoginData.photoURL : ''} 
-            className="w-full h-full" 
-            referrerPolicy="no-referrer"
-            onError={(e) => (e.target.src = "/fallback-image.png")}
-            alt="" />
-          </div>)}
-        </div>
+      {/* Logo */}
+      <div className="text-white font-bold text-[22px] sm:text-[28px] p-2">
+        <span className="hidden sm:block" onClick={() => navigate('/')}>CircleHub</span>
       </div>
+
+      {/* Nav Links */}
+      <div className="w-[100%] flex items-center text-white justify-between sm:gap-0 sm:w-0 ">
+        <NavLink
+          to="/"
+          className={({ isActive }) =>
+            `flex items-center gap-1 p-1 ml-4 ${isActive ? "text-blue-400 font-bold" : "text-white"}`
+          }
+        >
+          <MdDashboard className="text-[27px] sm:hidden" />
+          <span className="hidden sm:inline">Dashboard</span>
+        </NavLink>
+
+        <span className="text-[20px] hidden sm:block">/</span>
+
+        <NavLink
+          to="/room"
+          className={({ isActive }) =>
+            `flex items-center gap-1 p-1 mr-4 ${isActive ? "text-blue-400 font-bold" : "text-white"}`
+          }
+        >
+          <MdMeetingRoom className="text-[27px] sm:hidden" />
+          <span className="hidden sm:inline">Rooms</span>
+        </NavLink>
+        {
+          LoginData && (
+            <div
+            className="relative w-[42px] h-[42px] border border-white rounded-full 
+            cursor-pointer overflow-hidden bg-cover bg-contain sm:hidden"
+            onClick={handleShowTheAccount}
+            style={{backgroundImage:`url(${LoginData.photoURL || ""})`}}
+            
+          > </div>
+          )
+        }
+        
+      </div>
+
+      {/* Profile / Login */}
+      {!LoginData ? (
+        <Login />
+      ) : (
+        <div
+          className="relative w-[42px] h-[42px] border border-white rounded-full 
+          cursor-pointer overflow-hidden bg-cover bg-contain hidden sm:block"
+          onClick={handleShowTheAccount}
+          style={{backgroundImage:`url(${LoginData.photoURL || ""})`}}
+          
+        > </div>
+      )}
     </div>
+  </div>
+</div>
+
   );
 }
 

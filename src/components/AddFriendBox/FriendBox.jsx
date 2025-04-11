@@ -88,7 +88,7 @@ const FriendBox = ({ member, isFriend, communityId, ownerId, following}) => {
       
     return (
       <div
-        className={`flex flex-row items-center justify-between p-2 rounded-lg transition-all 
+        className={`flex flex-row items-center justify-between p-2 rounded-lg transition-all w-full
           ${isFriend ? 'bg-blue-900' : 'bg-gray-700'}
         `}
       >
@@ -98,7 +98,7 @@ const FriendBox = ({ member, isFriend, communityId, ownerId, following}) => {
             <span 
             title={member.name}
             className="text-white text-[13px]
-            px-2 py-1 max-w-[120px] overflow-hidden text-ellipsis whitespace-nowrap"
+            px-2 py-1 max-w-[150px] overflow-hidden text-ellipsis whitespace-nowrap"
           >
             {member.name}
           </span>

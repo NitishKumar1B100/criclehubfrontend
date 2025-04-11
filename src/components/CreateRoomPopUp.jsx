@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { FaLock } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
-import { auth } from "../utils/firebase"; // Import Firebase Auth
+import { auth, db } from "../utils/firebase"; // Import Firebase Auth
 import { toast } from "react-toastify";
 import { useLogin } from "../contexts/LoginCreadentialContext";
 import Loadingscreen from "./LoadingScr/Loadingscreen";
+import { doc, getDoc } from "firebase/firestore";
 
 const CreateRoom = ({ setFormPopUp }) => {
       const { LoginData } = useLogin()
@@ -40,6 +41,19 @@ const CreateRoom = ({ setFormPopUp }) => {
     if (!user) {
       toast.error("You are not logged in");
       return;
+    }
+    
+    try{
+      const docRef = doc(db, "users", user.uid);
+      const docSnap = await getDoc(docRef);
+
+      if (!docSnap.exists()) {
+       toast.error('Creating Room: User not found. please relogin') 
+       return
+      }
+    }catch(err){
+      toast.error('Creating Room: something wrong please try again later.')
+      return
     }
   
     try {

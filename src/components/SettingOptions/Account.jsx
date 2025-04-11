@@ -9,32 +9,43 @@ function Account() {
   const [selectedSection, setSelectedSection] = useState("");
   const [displayData, setDisplayData] = useState([]);
   const [loading, setLoading] = useState(true)
+  const [userloader, setUserLoader] = useState(false)
+  
+  const [contentType, setContentType] = useState('')
 
   useEffect(() => {
-    const fetchUserData = async () => {
-      const user = auth.currentUser;
-      if (!user) return;
+    
+      const fetchUserData = async () => {
+        try{
+        const user = auth.currentUser;
+        if (!user) return;
+  
+          const docRef = doc(db, "users", user.uid);
+          const docSnap = await getDoc(docRef);
+    
+          if (docSnap.exists()) {
+            setUserData(docSnap.data());
+          }else{
+            toast.error("Account: user id doesn't exit")
+          }
 
-      const docRef = doc(db, "users", user.uid);
-      const docSnap = await getDoc(docRef);
-
-      if (docSnap.exists()) {
-        setUserData(docSnap.data());
+      }catch(err){
+        toast.error("Account: Coudn't load the data.")
       }
-    };
-
-    fetchUserData();
+      };
+  
+      fetchUserData();
+ 
   }, []);
 
   if (!userData) {
     return (
       <div className="w-full h-full flex items-center justify-center text-white">
-        <Loadingscreen />
       </div>
     );
   }
 
-  const { name, image, followers = [], following = [], community = [], uid } = userData;
+  const { name, image, followers = [], following = [], community = [], uid, since } = userData;
 
   const friendList = followers.filter((f) => following.includes(f));
 
@@ -55,7 +66,7 @@ function Account() {
         searchType = 'community'
         ids = community
       }
-  
+      setContentType(type)
       let data = []
       for (let id of ids) {
           const docRef = doc(db, searchType, id);
@@ -79,47 +90,47 @@ function Account() {
   };
 
   return (
-    <div className="w-full h-[calc(100vh-110px)] text-white flex flex-col overflow-auto hidesilder">
-      {/* Profile Card */}
-      <div className="w-full bg-gray-800 rounded-xl shadow-lg flex flex-col p-3 lg:flex-row items-center gap-6 relative">
-        {/* Since text */}
-        <div className="absolute top-2 right-4 text-[12px] text-gray-400">Since:</div>
 
-        {/* Profile Image */}
-        <div className="flex-shrink-0">
-          <img src={image} alt="Profile" className="w-42 h-42 rounded-full border-4 border-gray-600" />
-        </div>
+<div className="w-full h-[calc(100vh-110px)] text-white flex flex-col overflow-auto hidesilder">
+{/* Profile Card */}
+<div className="w-full bg-gray-800 rounded-xl shadow-lg flex flex-col p-3 lg:flex-row items-center gap-6 relative">
+  {/* Since text */}
+  <div className="absolute top-2 right-4 text-[12px] text-gray-400">{since}</div>
 
-        {/* Info Area */}
-        <div className="flex-1 w-full">
-          <h2 className="text-xl text-center font-semibold lg:text-left">
-            {name}
-            <br />
-            <span className="text-[9px] text-gray-400">{uid}</span>
-          </h2>
+  {/* Profile Image */}
+  <div className="flex-shrink-0">
+    <img src={image} alt="Profile" className="w-42 h-42 rounded-full border-4 border-gray-600" />
+  </div>
 
-          {/* Stats Section */}
-          <div className="select-none flex flex-wrap justify-center lg:justify-start gap-6 w-full mt-6 text-[12px] sm:text-base">
-            <div onClick={() => handleSectionClick("followers")} className="cursor-pointer flex flex-col items-center min-w-[80px] hover:text-yellow-300">
-              <span className="font-bold">{followers.length}</span>
-              <span className="text-gray-300">Followers</span>
-            </div>
-            <div onClick={() => handleSectionClick("following")} className="cursor-pointer flex flex-col items-center min-w-[80px] hover:text-yellow-300">
-              <span className="font-bold">{following.length}</span>
-              <span className="text-gray-300">Following</span>
-            </div>
-            <div onClick={() => handleSectionClick("friends")} className="cursor-pointer flex flex-col items-center min-w-[80px] hover:text-yellow-300">
-              <span className="font-bold">{friendList.length}</span>
-              <span className="text-gray-300">Friends</span>
-            </div>
-            <div onClick={() => handleSectionClick("community")} className="cursor-pointer flex flex-col items-center min-w-[80px] hover:text-yellow-300">
-              <span className="font-bold">{community.length}</span>
-              <span className="text-gray-300">Community</span>
-            </div>
-          </div>
-        </div>
+  {/* Info Area */}
+  <div className="flex-1 w-full">
+    <h2 className="text-xl text-center font-semibold lg:text-left">
+      {name}
+      <br />
+      <span className="text-[9px] text-gray-400">{uid}</span>
+    </h2>
+
+    {/* Stats Section */}
+    <div className="select-none flex flex-wrap justify-center lg:justify-start gap-6 w-full mt-6 text-[12px] sm:text-base">
+      <div onClick={() => handleSectionClick("followers")} className="cursor-pointer flex flex-col items-center min-w-[80px] hover:text-yellow-300">
+        <span className="font-bold">{followers.length}</span>
+        <span className="text-gray-300">Followers</span>
       </div>
-
+      <div onClick={() => handleSectionClick("following")} className="cursor-pointer flex flex-col items-center min-w-[80px] hover:text-yellow-300">
+        <span className="font-bold">{following.length}</span>
+        <span className="text-gray-300">Following</span>
+      </div>
+      <div onClick={() => handleSectionClick("friends")} className="cursor-pointer flex flex-col items-center min-w-[80px] hover:text-yellow-300">
+        <span className="font-bold">{friendList.length}</span>
+        <span className="text-gray-300">Friends</span>
+      </div>
+      <div onClick={() => handleSectionClick("community")} className="cursor-pointer flex flex-col items-center min-w-[80px] hover:text-yellow-300">
+        <span className="font-bold">{community.length}</span>
+        <span className="text-gray-300">Community</span>
+      </div>
+    </div>
+  </div>
+</div>
       {/* Notice */}
       <div className="mt-6 w-full bg-yellow-100 text-yellow-800 text-sm p-4 rounded-lg border border-yellow-300">
         <strong className="font-semibold">Heads up!</strong> If you want to change your name, please update your name in your Google Account first, then re-login here to see the change.
@@ -147,7 +158,7 @@ function Account() {
           ))
         )
       ) : (
-        <p className="text-gray-400">No data to display.</p>
+        <p className="text-gray-400">No {contentType}.</p>
       )}
     </div>
   </>

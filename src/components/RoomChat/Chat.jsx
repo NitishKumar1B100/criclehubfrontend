@@ -9,11 +9,10 @@ import AgoraRTC from "agora-rtc-sdk-ng";
 import Loadingscreen from "../LoadingScr/Loadingscreen";
 import VideoCall from "./VideoCall";
 import { toast } from "react-toastify";
-import { useLogin } from "../../contexts/LoginCreadentialContext";
 
 const APP_ID =  import.meta.env.VITE_AGORA_APP_ID;
 
-function Chat({ roomId, userId, roomInfo }) {
+function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
   const [isChatVisible, setIsChatVisible] = useState(false);
   const [messages, setMessages] = useState([]);
   const [usersJoined, setUsersJoined] = useState([]);
@@ -28,7 +27,6 @@ function Chat({ roomId, userId, roomInfo }) {
   const navigate = useNavigate();
   const socket = getChatSocket();
   
-      const { LoginData} = useLogin()
 
   useEffect(() => {
     if (!socket || !userId || !roomId) return;
@@ -37,8 +35,8 @@ function Chat({ roomId, userId, roomInfo }) {
       uid: userId.uid,
       roomId,
       userDetails: {
-        name: userId.displayName,
-        image: userId.photoURL,
+        name: currentUserInfo.name,
+        image: currentUserInfo.img,
         uid: userId.uid,
       },
     };
@@ -75,7 +73,7 @@ function Chat({ roomId, userId, roomInfo }) {
       const client = AgoraRTC.createClient({ mode: "rtc", codec: "vp8" });
       agoraClientRef.current = client;
 
-      await client.join(APP_ID, roomId, roomToken, `${userId.uid}__${userId.displayName}`);
+      await client.join(APP_ID, roomId, roomToken, `${userId.uid}__${currentUserInfo.name}`);
       
       client.on("user-published", async (user, mediaType) => {
         await client.subscribe(user, mediaType);
@@ -173,8 +171,8 @@ function Chat({ roomId, userId, roomInfo }) {
 
     socket.emit("send_message", {
       sender: {
-        name: userId.displayName,
-        image: userId.photoURL,
+        name: currentUserInfo.name,
+        image: currentUserInfo.img,
         uid: userId.uid,
         time: new Date().toLocaleTimeString(),
       },
@@ -226,8 +224,8 @@ function Chat({ roomId, userId, roomInfo }) {
       uid: userId.uid,
       roomId,
       userDetails: {
-        name: userId.displayName,
-        image: userId.photoURL,
+        name: currentUserInfo.name,
+        image: currentUserInfo.img,
         uid: userId.uid,
       },
     });

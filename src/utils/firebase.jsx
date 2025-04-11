@@ -40,8 +40,13 @@ const signInWithGoogle = async () => {
       name: providerInfo.displayName,
       image: user.photoURL,
       uid: user.uid,
+      since: new Date().toLocaleDateString("en-US", {
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+      })
     };
-
+    
     if (docSnap.exists()) {
       // User exists — update their name and image only
       await updateDoc(docRef, {

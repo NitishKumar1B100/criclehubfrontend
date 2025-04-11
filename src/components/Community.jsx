@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { collection, doc, onSnapshot, serverTimestamp, setDoc, updateDoc, arrayUnion } from 'firebase/firestore'
+import { collection, doc, onSnapshot, serverTimestamp, setDoc, updateDoc, arrayUnion, getDoc } from 'firebase/firestore'
 import { db } from '../utils/firebase'
 import CommunityBox from './CommunityBox.jsx/CommunityBox'
 import AddFriendBox from './AddFriendBox/AddFriendBox'
@@ -27,7 +27,23 @@ function Community() {
   useEffect(() => {
     if (!LoginData?.uid) return;
 
-    const userRef = doc(db, 'users', LoginData.uid);
+    let userRef 
+    
+    
+    try{
+      const getuser = async () => {
+        userRef = doc(db, 'users', LoginData.uid);
+        const docSnap = await getDoc(userRef);
+          if (!docSnap.exists()) {
+            toast.error("Community: user id doesn't exit.")
+          }
+      }
+      getuser()
+    }catch(err){
+      toast.error("Community: Coudn't find the user data.")
+    }
+    
+    
     let communityUnsubs = [];
 
     const unsubUser = onSnapshot(userRef, async (userSnap) => {
@@ -184,7 +200,7 @@ function Community() {
       {
         AddFriend && (<div>
           <div className="w-full h-screen z-[999] fixed top-0 left-0 flex items-center justify-center bg-gray-700 opacity-90">
-            <div className="relative w-[350px] max-h-[500px] bg-gray-800 rounded p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 p-2">
+            <div className="relative w-[90%] sm:w-[450px] max-h-[600px] bg-gray-800 rounded p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 p-2">
               <div
                 onClick={() => setAddFriend(false)}
                 className="absolute top-0 right-0 bg-blue-900 w-7 h-7 cursor-pointer flex items-center justify-center text-gray-200 text-xl"><IoCloseSharp /></div>

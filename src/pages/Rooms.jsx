@@ -5,6 +5,9 @@ import { getRoomSocket } from '../utils/socket';
 import { useLoginPopUp } from '../contexts/Loginpopup/Loginpopup';
 import { useLogin } from '../contexts/LoginCreadentialContext';
 import Loadingscreen from '../components/LoadingScr/Loadingscreen';
+import { toast } from 'react-toastify';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../utils/firebase';
 function Rooms() {
   const [formPopUp, setFormPopUp] = useState(false);
   const [rooms, setRooms] = useState([]); // Store rooms from Firestore
@@ -15,29 +18,84 @@ function Rooms() {
 
 
   useEffect(() => {
-    const socket = getRoomSocket()
+    const socket = getRoomSocket();
+  
     const handleRoomList = (rooms) => {
-      setRooms(rooms);
-      setLoadingRooms(false)
+      try {
+        setRooms(rooms);
+      } catch (err) {
+        toast.error("Failed to update room list.");
+        console.error("Socket roomList error:", err);
+      } finally {
+        setLoadingRooms(false);
+      }
     };
-
-    socket.on("roomList", handleRoomList);
-
-    // ✨ Ask server to send room list again (in case it's a re-entry)
-    socket.emit("getRoomList");
-
+  
+    const checkUserExist = async () => {
+      try {
+        if (!LoginData || !LoginData.uid) {
+          toast.error("User data is missing. Please login again.");
+          return false;
+        }
+  
+        const docRef = doc(db, "users", LoginData.uid);
+        const docSnap = await getDoc(docRef);
+  
+        if (!docSnap.exists()) {
+          toast.error("User not found in database. Please relogin.");
+          return false;
+        }
+  
+        return true;
+      } catch (err) {
+        toast.error("Error verifying user. Try again later.");
+        console.error("checkUserExist error:", err);
+        return false;
+      }
+    };
+  
+    const setupSocket = async () => {
+      const userIsValid = await checkUserExist();
+      if (!userIsValid) {
+        setLoadingRooms(false);
+        return; // Do not proceed if user is invalid
+      }
+  
+      try {
+        socket.on("roomList", handleRoomList);
+        socket.emit("getRoomList");
+      } catch (err) {
+        toast.error("Failed to connect to server.");
+        console.error("Socket connection error:", err);
+        setLoadingRooms(false);
+      }
+    };
+  
+    setupSocket();
+  
     return () => {
-      socket.off("roomList", handleRoomList);
+      try {
+        socket.off("roomList", handleRoomList);
+      } catch (err) {
+        console.error("Socket cleanup error:", err);
+      }
     };
-  }, []);
+  }, [LoginData]); // Ensure LoginData is in the dependency list
+  
+  
 
   const handleCreatingRoom = () => {
-    if (LoginData === null) {
-      setLoginPopUp(true)
-      return
+    try {
+      if (!LoginData) {
+        setLoginPopUp(true);
+        return;
+      }
+      setFormPopUp(true);
+    } catch (err) {
+      toast.error("Something went wrong while creating a room.");
     }
-    setFormPopUp(true);
-  }
+  };
+  
 
   return (
     <div className='w-screen h-[calc(100vh-60px)] bg-gray-900'>
@@ -67,7 +125,7 @@ function Rooms() {
       </div>
 
       {formPopUp && (
-        <div className="w-screen h-screen absolute top-0 bg-[#00000272]">
+        <div className="w-screen h-screen absolute top-0 left-0 bg-[#00000272]">
           <CreateRoom setFormPopUp={setFormPopUp} />
         </div>
       )}

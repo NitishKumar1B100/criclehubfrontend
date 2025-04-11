@@ -3,7 +3,7 @@ import { Outlet } from 'react-router-dom'
 
 function WithNavbarLayout() {
   return (
-    <div>
+    <div className='flex flex-col-reverse sm:flex-col'>
         <Navbar/>
         <Outlet/>
     </div>

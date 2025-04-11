@@ -23,7 +23,7 @@ const DashboardLeftOption = ({ children, type }) => {
         <div 
         onClick={handleSelectType}
         className={`w-[60px] h-[60px] bg-gray-800 rounded-[50%] text-[#ffffffb8] text-3xl cursor-pointer
-            ${activeOption === type ? 'bg-[#ffffffb8] text-gray-200' : 'text-gray-500'}`}
+            ${activeOption === type ? 'text-gray-200 font-bold' : 'text-gray-500'}`}
             >
             <div className="w-full h-full flex justify-center items-center ">
                 {children}

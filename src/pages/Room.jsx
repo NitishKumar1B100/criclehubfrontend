@@ -12,6 +12,7 @@ const Room = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState(null);
   const [roomData, setRoomData] = useState(null);
+  const [currentUserInfo, setCurrentUserInfo] = useState({name:'', img:''})
   
     const { setLoginData} = useLogin()
 
@@ -23,6 +24,17 @@ const Room = () => {
             setIsLoggedIn(true);
             setUsername(currentUser)
             setLoginData(currentUser)
+            
+            const googleProfile = currentUser.providerData.find(
+              (provider) => provider.providerId === "google.com"
+            );
+            if (googleProfile) {
+              setCurrentUserInfo({
+                name: googleProfile.displayName || '',
+                img: currentUser.photoURL || '',
+              });
+            }
+            
             checkRoomExists()
           } else {
             setIsLoggedIn(false);
@@ -70,7 +82,7 @@ const Room = () => {
   if (roomExists === null) return <p>Loading...</p>; // Show loading state
   if (!roomExists) return <p className="text-red-500 text-center mt-10">Room not found</p>; // Room doesn't exist
 
-  return <Chat roomId={id} userId={username} roomInfo={roomData}/>; // Render chat if room exists
+  return <Chat roomId={id} userId={username} roomInfo={roomData} currentUserInfo={currentUserInfo}/>; // Render chat if room exists
 };
 
 export default Room;
