@@ -12,10 +12,10 @@ import { useCurrentSettings } from "../contexts/CurrentSettingsContext";
 function Navbar() {
 
   const { LoginData, setLoginData } = useLogin()
-  const [imageUrl, setImageUrl] = useState('')
   const { setActiveOption } = useDashboard();
   const {setSelectedPhoneChat} = usePhoneChat()
   const {  setSelectedCurrentSettings } = useCurrentSettings();
+  
 
   
   useEffect(() => {
@@ -23,16 +23,9 @@ function Navbar() {
       auth,
       (currentUser) => {
         if (currentUser) {
-          const providerInfo = currentUser.providerData.find(
-            (provider) => provider.providerId === "google.com"
-          );
-          if (providerInfo) {
-            setImageUrl(providerInfo.displayName);
-          }
           setLoginData(currentUser);
         } else {
           // User is logged out
-          setImageUrl('');
           setLoginData(null);
         }
       },
@@ -49,6 +42,7 @@ function Navbar() {
     setActiveOption('settings')
     setSelectedPhoneChat(false)
     setSelectedCurrentSettings({ type: 'account'})
+    setSelectedPhoneChat(true)
     
   }
   
