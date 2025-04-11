@@ -12,11 +12,11 @@ function Dashboard() {
     <FreindChatIdProvider>
       <div className="w-screen h-[calc(100vh-60px)] bg-gray-900 flex">
         <div className="w-full h-full flex flex-row ">
-          <div className="w-[550px] dashboard-left">
+          <div className="w-[26%] dashboard-left sm:w-[400px]">
             <DashboardLeft />
           </div>
 
-          <div className={` ${selectedPhoneChat ? 'show-chat-window' : 'hide-chat-window'} w-full  bg-gray-700`}>
+          <div className={` ${selectedPhoneChat ? 'show-chat-window' : 'hide-chat-window'} w-[calc(100%-26%)]  bg-gray-700`}>
             <MainChatWindow />
           </div>
         </div>

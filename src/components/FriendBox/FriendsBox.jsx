@@ -4,12 +4,12 @@ import { db } from "../../utils/firebase";
 import { useFriend } from "../../contexts/FriendContext";
 import { usePhoneChat } from "../../contexts/PhoneChatContext";
 import { useLogin } from "../../contexts/LoginCreadentialContext";
-import { PiDotsThreeCircleVerticalFill } from "react-icons/pi";
 import { toast } from "react-toastify";
 import Loadingscreen from "../LoadingScr/Loadingscreen";
+import { CgOptions } from "react-icons/cg";
 
 
-const FriendsBox = ({ user, setShowOptions, showOptions, handleAddCommunity}) => {
+const FriendsBox = ({ user, handleAddCommunity, chooseShowOption, setChooseShowOption }) => {
     const { selectedFriend, setSelectedFriend } = useFriend();
     const { setSelectedPhoneChat } = usePhoneChat();
     const [userInfo, setUserInfo] = useState(null);
@@ -35,10 +35,10 @@ const FriendsBox = ({ user, setShowOptions, showOptions, handleAddCommunity}) =>
 
     const selectFriend = async () => {
         setFetchingChat(true)
-        try{
+        try {
             const res = await fetch(`${import.meta.env.VITE_BASE_URL}/api/users/check-friend-status?uid=${LoginData.uid}&otherUid=${user.id}`);
             const result = await res.json();
-    
+
             if (result.isFriend) {
                 setFetchingChat(false)
                 const data = { type: 'friend', id: user.id, name: userInfo.name, image: userInfo.image };
@@ -48,7 +48,7 @@ const FriendsBox = ({ user, setShowOptions, showOptions, handleAddCommunity}) =>
                 toast.error("You both need to follow each other to chat.");
                 setFetchingChat(false)
             }
-        }catch(err){
+        } catch (err) {
             toast.error("Error fetching friend status. Please try again later.");
             setFetchingChat(false)
         }
@@ -83,7 +83,12 @@ const FriendsBox = ({ user, setShowOptions, showOptions, handleAddCommunity}) =>
 
     const ShowtheOptions = (e) => {
         e.stopPropagation(); // Prevent default behavior of the button
-        setShowOptions(!showOptions);
+        if (chooseShowOption === user.id) {
+            setChooseShowOption(null)
+        } else {
+            setChooseShowOption(user.id)
+        }
+
     }
 
 
@@ -93,16 +98,15 @@ const FriendsBox = ({ user, setShowOptions, showOptions, handleAddCommunity}) =>
     return (
         <div
             onClick={selectFriend}
-            className={`relative cursor-pointer flex items-center justify-between p-2 rounded-lg transition-all 
+            className={`relative cursor-pointer flex items-center justify-between p-2 rounded-lg transition-all w-full
         ${selectedFriend.id === user.id
                     ? 'bg-blue-800 shadow-md scale-[1.02]'
                     : 'bg-gray-800 hover:bg-gray-700'
                 }`}
         >
-
-            <div className="ml-3 flex justify-center items-center gap-3 ">
+            <div className="ml-3 flex items-center gap-3 w-full">
                 {/* Friend Avatar */}
-                <div className="relative w-[50px] h-[50px] rounded-full overflow-hidden bg-gray-700">
+                <div className="w-[50px] h-[50px] rounded-full overflow-hidden bg-gray-700 shrink-0">
                     <img
                         src={userInfo.image}
                         alt={userInfo.name}
@@ -110,27 +114,30 @@ const FriendsBox = ({ user, setShowOptions, showOptions, handleAddCommunity}) =>
                         loading="lazy"
                     />
                 </div>
-                {/* Friend Name */}
-                <p className="text-white text-[16px] font-medium truncate max-w-[140px]">
-                    {userInfo.name}
-                </p>
-                {fetchingChat && (
-                    <div className="ml-2 flex items-center justify-center h-full">
-                        <div className="w-8 h-8 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
+
+                {/* Friend Name + Loading Spinner */}
+                <div className="flex items-center justify-between w-full overflow-hidden">
+                    <div
+                    title={userInfo.name}
+                     className="truncate text-white text-[16px] font-medium">
+                        {userInfo.name}
                     </div>
-                )}
 
-                {/* unfollow button */}
-
-                {/* <p className="text-gray-400 text-[13px]">{userInfo.status}</p> */}
+                    {fetchingChat && (
+                        <div className="mr-2 mt-1 flex items-center justify-center">
+                            <div className="w-5 h-5 border-4 border-gray-100 border-dashed rounded-full animate-spin" />
+                        </div>
+                    )}
+                </div>
             </div>
-            <button className="text-red-400 cursor-pointer select-none text-3xl"
+
+            <button className="cursor-pointer select-none text-2xl text-gray-200 absolute top-0 right-0"
                 onClick={ShowtheOptions}
-            ><PiDotsThreeCircleVerticalFill /></button>
+            ><CgOptions /></button>
 
             {
-                showOptions && (
-                    <div className="absolute top-12 right-1 bg-gray-800 rounded shadow-lg z-[999]
+                chooseShowOption === user.id && (
+                    <div className="absolute top-7 right-1 bg-gray-800 rounded shadow-lg z-[999]
                     flex flex-col gap-2">
                         <button
                             onClick={handleUnfollow}

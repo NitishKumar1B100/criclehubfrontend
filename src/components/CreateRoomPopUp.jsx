@@ -1,10 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaLock } from "react-icons/fa";
 import { IoClose } from "react-icons/io5";
 import { auth } from "../utils/firebase"; // Import Firebase Auth
 import { toast } from "react-toastify";
+import { useLogin } from "../contexts/LoginCreadentialContext";
+import Loadingscreen from "./LoadingScr/Loadingscreen";
 
 const CreateRoom = ({ setFormPopUp }) => {
+      const { LoginData } = useLogin()
+    
+      
+      const [loading, setLoading] = useState(false)
+      
+      useEffect(()=>{
+        if(!LoginData){
+          setFormPopUp(false);
+        }
+      },[LoginData])
+  
   const [formData, setFormData] = useState({
     topic: "",
     language: "English",
@@ -31,6 +44,7 @@ const CreateRoom = ({ setFormPopUp }) => {
   
     try {
       // Ensure the formData contains `roomName` and `size`
+      setLoading(true)
       if (!formData.size) {
         toast.error(`Room name and size are required`);
         return;
@@ -52,6 +66,7 @@ const CreateRoom = ({ setFormPopUp }) => {
       //const result = await response.json();
       if (response.ok) {
         setFormPopUp(false);
+        setLoading(false)
       } else {
         toast.error("Error creating room");
       }
@@ -74,7 +89,7 @@ const CreateRoom = ({ setFormPopUp }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-full h-[50px] flex items-center justify-between">
-          <h2 className="text-2xl font-semibold mb-4">Create a Room</h2>
+          <h2 className="text-2xl font-semibold mb-4">{loading ? <Loadingscreen/> : 'Create a Room'}</h2>
           <button
             className="text-3xl cursor-pointer"
             onClick={() => setFormPopUp(false)}

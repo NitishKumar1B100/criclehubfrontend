@@ -3,33 +3,72 @@ import { useCommunity } from '../../contexts/CommunityContext'
 import DefaultChat from './DefaultChat'
 import { FaChevronLeft } from "react-icons/fa";
 import { usePhoneChat } from '../../contexts/PhoneChatContext';
-import { addDoc, collection, doc, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
+import { addDoc, collection, doc, getDoc, onSnapshot, orderBy, query, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
 import { useLogin } from '../../contexts/LoginCreadentialContext';
 import { toast } from 'react-toastify';
 
 const CommunityChatBox = ({ CommunityName, CommunityId }) => {
-  const {setSelectedPhoneChat } = usePhoneChat()
+  const { setSelectedPhoneChat } = usePhoneChat()
   const [messages, setMessages] = useState([])
   const [currentMsg, setCurrentMsg] = useState('')
-    const { LoginData } = useLogin()
+
+  const [joinedUsers, setJoinedUsers] = useState(['asdf','asdfasdf']);
+
+  const { LoginData } = useLogin()
 
   const handleSelectType = () => {
     setSelectedPhoneChat(false)
   }
 
+  useEffect(() => {
+    if (!CommunityId) return;
+
+    const communityDocRef = doc(db, 'community', CommunityId);
+
+    const unsubscribe = onSnapshot(communityDocRef, async (snap) => {
+      if (!snap.exists()) return;
+
+      const data = snap.data();
+      const userIds = data.joinedUsers || [];
+
+      try {
+        const names = await Promise.all(
+          userIds.map(async (uid) => {
+            try {
+              const userDocRef = doc(db, 'users', uid);
+              const userSnap = await getDoc(userDocRef);
+              const userData = userSnap.data();
+              return userData?.name || 'Unknown';
+            } catch (err) {
+              //console.error("Error fetching user data for UID:", uid, err);
+              toast.error('Error fetching user data for UID')
+              return 'Unknown';
+            }
+          })
+        );
+        setJoinedUsers(names);
+      } catch (err) {
+        //console.error("Error fetching user names:", err);
+        toast.error('Error fetching user names')
+      }
+    });
+
+    return () => unsubscribe();
+  }, [CommunityId]);
+
   // Real-time chat listener
   useEffect(() => {
     if (!CommunityId) return;
-  
+
     let unsubscribe;
-  
+
     try {
       const q = query(
         collection(db, 'community', CommunityId, 'messages'),
         orderBy('createdAt')
       );
-  
+
       unsubscribe = onSnapshot(q, (snapshot) => {
         const chatMessages = snapshot.docs.map(doc => ({
           id: doc.id,
@@ -40,12 +79,13 @@ const CommunityChatBox = ({ CommunityName, CommunityId }) => {
     } catch (error) {
       toast.error("Failed to load community chat.");
     }
-  
+
     return () => {
       if (unsubscribe) unsubscribe();
     };
   }, [CommunityId]);
-  
+
+
   const handleSendMessage = async () => {
     if (!currentMsg.trim() || !LoginData?.uid) return
 
@@ -76,22 +116,23 @@ const CommunityChatBox = ({ CommunityName, CommunityId }) => {
     <div className="hidesilder w-full h-full flex flex-col bg-gray-900 text-white">
 
       {/* Header */}
-      <div className="flex items-center justify-between text-xl font-bold border-b border-gray-700">
-        <div className="flex items-center gap-3 h-15">
+      <div className="w-full flex items-center justify-between text-xl border-b border-gray-700">
+        <div className="w-full flex items-center gap-3 h-15">
           <div
             className="hide-chat-window-button cursor-pointer p-2"
             onClick={handleSelectType}
           >
             <FaChevronLeft />
           </div>
-          <div className="select-none p-2">{CommunityName}</div>
-        </div>
+          <div className="select-none p-2 flex flex-col w-full">
+            <div className="font-bold">{CommunityName}</div>
+            <div className="text-sm truncate w-full">
+              {joinedUsers.join(', ')}
+            </div>
 
-        <div className="flex items-center gap-5 p-2">
-          <div className="mr-2 pr-3 cursor-pointer">
-            {/* <FaCircleInfo /> */}
           </div>
         </div>
+
       </div>
 
       {/* Messages */}
@@ -99,11 +140,10 @@ const CommunityChatBox = ({ CommunityName, CommunityId }) => {
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`max-w-[300px] bg-gray-800 rounded-md ${
-              msg.senderId === LoginData.uid ? 'ml-auto' : ''
-            }`}
+            className={`max-w-[300px] mt-2 bg-gray-800 rounded-md ${msg.senderId === LoginData.uid ? 'ml-auto' : ''
+              }`}
           >
-            <div className="p-2 mb-2">
+            <div className="p-2">
               <span>{msg.senderName || msg.senderId}</span>
               <p className="p-2 bg-gray-700">{msg.text}</p>
             </div>
@@ -128,9 +168,9 @@ const CommunityChatBox = ({ CommunityName, CommunityId }) => {
 
 
 function CommunityChatWIndow() {
-  const { selectedCommunity, setSelectedCommunity} = useCommunity()
+  const { selectedCommunity, setSelectedCommunity } = useCommunity()
   const { LoginData } = useLogin()
-  
+
   useEffect(() => {
     if (!LoginData?.uid || !selectedCommunity?.id) return;
 
@@ -143,12 +183,15 @@ function CommunityChatWIndow() {
 
       // If the user is no longer part of the selected community
       if (!joinedCommunities.includes(selectedCommunity.id)) {
-        setSelectedCommunity({id:'', name:''}); // Reset selected community
+        setSelectedCommunity({ id: '', name: '' }); // Reset selected community
       }
     });
 
     return () => unsubscribe();
   }, [LoginData?.uid, selectedCommunity?.id, setSelectedCommunity]);
+  
+  if(!LoginData) return <div className="hidesilder w-full h-full"></div>
+  
   return (
     <div className="hidesilder w-full h-full ">
       {

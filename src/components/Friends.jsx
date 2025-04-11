@@ -5,6 +5,7 @@ import { arrayUnion, collection, doc, getDoc, getDocs, onSnapshot, query, update
 import { db } from '../utils/firebase';
 import FriendsBox from './FriendBox/FriendsBox';
 import { toast } from 'react-toastify';
+import Loadingscreen from './LoadingScr/Loadingscreen';
 
 
 function Friends() {
@@ -16,9 +17,17 @@ function Friends() {
   const [ownedCommunitiesList, setOwnedCommunitiesList] = useState([])
   const [addFriendloading, setAddFriendloading] = useState(false)
   const [addFriendloadingId, setAddFriendloadingId] = useState('')
+  
+  const [chooseShowOption, setChooseShowOption] = useState(null)
 
 
   const { LoginData } = useLogin()
+  
+  useEffect(()=>{
+    if(!LoginData){
+      setFriendList([])
+    }
+  },[LoginData])
 
   useEffect(() => {
     if (!LoginData || !LoginData.uid) return;
@@ -58,6 +67,8 @@ function Friends() {
 
   const handleAddCommunity = async (e, addFriend) => {
     e.stopPropagation();
+    setLoadingCommunity(true)
+    setOwnedCommunitiesList([])
     setShowCommunity(prev => !prev);
     setShowOptions(false);
 
@@ -170,12 +181,28 @@ function Friends() {
         });
       }
   
+      setAddFriendloading(false);
+      setOwnedCommunitiesList([])
+      setShowCommunity(false);
+      setShowOptions(false);
+      setChooseShowOption(null)
+      setLoadingCommunity(false);
     } catch (error) {
       toast.error("Error adding user to community.");
+      setAddFriendloading(false);
     }
   };
   
-
+  const handleCloseAddCommunityWdw = () => {
+  
+    setAddFriendloading(false);
+    setOwnedCommunitiesList([])
+    setShowCommunity(false);
+    setShowOptions(false);
+    setChooseShowOption(null)
+    setLoadingCommunity(false);
+  
+  }
 
   return (
     <div className="w-full h-full bg-gray-900 ">
@@ -189,6 +216,8 @@ function Friends() {
             setShowOptions={setShowOptions}
             showOptions={showOptions}
             handleAddCommunity={handleAddCommunity} 
+            chooseShowOption={chooseShowOption}
+            setChooseShowOption={setChooseShowOption}
             />
         ))}
       </div>
@@ -199,13 +228,11 @@ function Friends() {
             <div className="bg-gray-900 p-4 rounded-lg shadow-lg relative">
             <button
             className="absolute top-0 right-1 text-red-500 cursor-pointer text-[18px]"
-            onClick={() => setShowCommunity(false)}
+            onClick={handleCloseAddCommunityWdw}
             >X</button>
               {
                 loadingCommunity ? (
-                  <div className="ml-2 flex items-center justify-center h-full">
-                    <div className="w-8 h-8 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
-                  </div>
+                  <Loadingscreen/>
                 ) : (
                   <div className="text-white p-2 flex flex-col items-center justify-between gap-2">
 

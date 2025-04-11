@@ -8,8 +8,9 @@ import {  arrayUnion, doc, getDoc, onSnapshot, serverTimestamp, setDoc, updateDo
 import { db } from '../../utils/firebase';
 import { useFreindChatId } from '../../contexts/FriendChatID/FriendChatID';
 import { toast } from 'react-toastify';
+import { IoCloseSharp } from "react-icons/io5";
 
-const FriendMsgHeadLine = ({ selectedFriend }) => {
+const FriendMsgHeadLine = ({ selectedFriend , handleShowFriendDetails}) => {
   const {setSelectedPhoneChat } = usePhoneChat()
   
   const handleChatShow = () => {
@@ -27,8 +28,10 @@ const FriendMsgHeadLine = ({ selectedFriend }) => {
                 </div>
 
                 <div className="h-full flex justify-start items-center gap-2 p-2">
-                    <div className={`w-13 h-13 border border-white rounded-[50%] bg-cover bg-center`} 
-                    style={{backgroundImage:`${`url(${selectedFriend.image})`}`}}></div>
+                    <div className={`w-10 h-10 cursor-pointer rounded-[50%] bg-cover bg-center`} 
+                    style={{backgroundImage:`${`url(${selectedFriend.image})`}`}}
+                    onClick={handleShowFriendDetails}
+                    ></div>
                     <div className="text-white text-[3vh] font-semibold">{selectedFriend.name}</div>
                 </div>
 
@@ -72,7 +75,7 @@ const FriendMsg = ({FreindChatId }) => {
         };
       }, [FreindChatId]);
     
-    
+    if (!LoginData) return <div></div>
 
     return (
         <div className="flex flex-col justify-start items-start gap-2 p-2">
@@ -142,13 +145,13 @@ const SendFriendMsg = ({ FreindChatId, selectedFriend }) => {
 };
 
 
-const Allpartofchat = ({ selectedFriend, FreindChatId }) => {
+const Allpartofchat = ({ handleShowFriendDetails, selectedFriend, FreindChatId }) => {
     return (
         <div className='w-full h-full flex 
     flex-col gap-1
    '>
             <div className="w-full h-16 border-b-gray-500 border-b-2 ">
-                <FriendMsgHeadLine selectedFriend={selectedFriend} />
+                <FriendMsgHeadLine selectedFriend={selectedFriend} handleShowFriendDetails={handleShowFriendDetails} />
             </div>
 
             <div className="w-full h-full overflow-y-auto hidesilder">
@@ -167,6 +170,9 @@ function FriendChatWindow() {
      const { LoginData} = useLogin()
      const { FreindChatId, setFreindChatId} = useFreindChatId()
      const [fetchingId, setFetchingId] = useState(false)
+     
+     const [showFriendDTL, setShowFriendDTL] = useState(false)
+     const [showFriendDTLOBJ, setShowFriendDTLOBJ] = useState(null)
      
          
      useEffect(() => {
@@ -250,17 +256,67 @@ useEffect(() => {
     };
   }, [LoginData?.uid, selectedFriend?.id]);
   
+  const handleShowFriendDetails = async () => {
+    
+    try{
+      const id = selectedFriend.id
+      const docRef = doc(db, 'users', id);
+      const docSnap = await getDoc(docRef);
+      
+      const {name, image, followers, following} = docSnap.data()
+      setShowFriendDTLOBJ({name, image, followers:followers.length, following:following.length})  
+      console.log(showFriendDTLOBJ)
+      
+    setShowFriendDTL(prev => !prev)
+    }catch(err){
+    toast.error("Coudn't find the user details, please try again.")
+    }
+  }
+  
+  const handlecloseOFShowDTL = () => {
+    
+    setShowFriendDTL(prev => !prev)
+  }
+  
     
     if (fetchingId) return ( <div className="ml-2 flex items-center justify-center h-full">
         <div className="w-8 h-8 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
     </div>)
+    
+    if(!LoginData) return <div className="hidesilder w-full h-full bg-gray-900 relative"></div>
+    
     return (
         <>
-            <div className="hidesilder w-full h-full bg-gray-900 ">
+            <div className="hidesilder w-full h-full bg-gray-900 relative">
                 {(selectedFriend.id && selectedFriend.type) ? 
-                    (<Allpartofchat FreindChatId={FreindChatId} selectedFriend={selectedFriend} />)
+                    (<Allpartofchat
+                      handleShowFriendDetails={handleShowFriendDetails} 
+                      FreindChatId={FreindChatId} 
+                      selectedFriend={selectedFriend} />)
                  :(<DefaultChat />)}
+                 
+                 {
+              showFriendDTL&& (
+                <div className="bg-gray-800/50 absolute top-0 left-0 w-full h-full  flex items-center justify-center">
+                  <div className="w-[300px] h-[300px] relative p-5 rounded-xl bg-gray-800 flex flex-col items-center justify-center gap-3">
+                    <div className="w-40 h-40 bg-cover bg-contain " style={{backgroundImage:`url(${showFriendDTLOBJ.image})`}}></div>
+                    <div 
+                    onClick={handlecloseOFShowDTL}
+                    className="absolute top-0 right-0 bg-blue-900 w-7 h-7 cursor-pointer flex items-center justify-center text-gray-200 text-xl"><IoCloseSharp/></div>
+                    <div className="text-gray-200">
+                      <p className='text-center'>{showFriendDTLOBJ.name}</p>
+                      <p className='text-[8px]'>{selectedFriend.id}</p>
+                    </div>
+                    <div className="flex flex row text-gray-200">
+                      <span>followers: {showFriendDTLOBJ.followers}  following: {showFriendDTLOBJ.following}</span>
+                      
+                    </div>
+                  </div>
+                </div>
+              )
+            }
             </div>
+
         </>
     )
 }

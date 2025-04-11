@@ -5,69 +5,36 @@ import { useLogin } from "../contexts/LoginCreadentialContext";
 import { onAuthStateChanged } from "firebase/auth";
 import Login from "../components/Login/Login";
 import { toast } from "react-toastify";
-
-
-
-const  Logout = ({setShowDetails, LoginData, showDetails, handleLogout, imageUrl}) => {
-
-  
-
-  
-  return(
-    <div>
-    <div
-
-      className="relative w-[50px] h-[50px] mr-8 border border-white rounded-full cursor-pointer overflow-hidden"
-      onClick={() => setShowDetails(prev => !prev)}>
-      <img src={LoginData.photoURL ? LoginData.photoURL : ''} 
-      className="w-full h-full" 
-      referrerPolicy="no-referrer"
-      onError={(e) => (e.target.src = "/fallback-image.png")}
-      alt="" />
-    </div>
-    <div className="">
-      {showDetails && (
-        <div className="absolute bg-gray-600 right-[-30px] top-[47px] transform -translate-x-1/2 mt-2 text-white p-3 rounded shadow-lg flex flex-col items-center">
-          <span className="text-sm">{imageUrl? imageUrl: ''}</span>
-          <button
-            onClick={handleLogout}
-            className="mt-2 px-3 cursor-pointer py-1 bg-red-500 text-white rounded text-sm"
-          >
-            Logout
-          </button>
-        </div>
-      )}
-    </div>
-  </div>
-  )
-}
-
+import { useDashboard } from "../contexts/DashboardLeftcontext";
+import { usePhoneChat } from "../contexts/PhoneChatContext";
+import { useCurrentSettings } from "../contexts/CurrentSettingsContext";
 
 function Navbar() {
 
   const { LoginData, setLoginData } = useLogin()
-  const [showDetails, setShowDetails] = useState(false);
   const [imageUrl, setImageUrl] = useState('')
+  const { setActiveOption } = useDashboard();
+  const {setSelectedPhoneChat} = usePhoneChat()
+  const {  setSelectedCurrentSettings } = useCurrentSettings();
 
-  const handleLogout = async () => {
-    try {
-      await logout();
-      toast.success("Logged out successfully");
-    } catch (err) {
-      toast.error("Failed to log out. Please try again.");
-    }
-  };
   
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(
       auth,
       (currentUser) => {
-        const providerInfo = currentUser.providerData.find(
-          (provider) => provider.providerId === "google.com"
-        );
-        setImageUrl(providerInfo.displayName)
-        
-        setLoginData(currentUser);
+        if (currentUser) {
+          const providerInfo = currentUser.providerData.find(
+            (provider) => provider.providerId === "google.com"
+          );
+          if (providerInfo) {
+            setImageUrl(providerInfo.displayName);
+          }
+          setLoginData(currentUser);
+        } else {
+          // User is logged out
+          setImageUrl('');
+          setLoginData(null);
+        }
       },
       (error) => {
         toast.error("Failed to track authentication state.");
@@ -76,6 +43,15 @@ function Navbar() {
   
     return () => unsubscribe();
   }, []);
+  
+  
+  const handleShowTheAccount = () => {
+    setActiveOption('settings')
+    setSelectedPhoneChat(false)
+    setSelectedCurrentSettings({ type: 'account'})
+    
+  }
+  
   
   return (
     <div className="w-screen h-[60px] bg-gray-800 ">
@@ -108,8 +84,17 @@ function Navbar() {
             </div>
           </div>
           {!LoginData ? (<Login />)
-          :(<Logout setShowDetails={setShowDetails} LoginData={LoginData} imageUrl={imageUrl}
-          showDetails={showDetails} handleLogout={handleLogout}/>)}
+          :( <div
+    
+            className="relative w-[50px] h-[50px] mr-8 border border-white rounded-full cursor-pointer overflow-hidden"
+            onClick={ handleShowTheAccount}
+            >
+            <img src={LoginData.photoURL ? LoginData.photoURL : ''} 
+            className="w-full h-full" 
+            referrerPolicy="no-referrer"
+            onError={(e) => (e.target.src = "/fallback-image.png")}
+            alt="" />
+          </div>)}
         </div>
       </div>
     </div>

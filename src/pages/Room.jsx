@@ -4,6 +4,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { auth, signInWithGoogle } from "../utils/firebase";
 import Chat from "../components/RoomChat/Chat";
 import { toast } from "react-toastify";
+import { useLogin } from "../contexts/LoginCreadentialContext";
 
 const Room = () => {
   const { id } = useParams();
@@ -11,6 +12,8 @@ const Room = () => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [username, setUsername] = useState(null);
   const [roomData, setRoomData] = useState(null);
+  
+    const { setLoginData} = useLogin()
 
   useEffect(() => {
     const checkUserLogined = async () => {
@@ -19,6 +22,7 @@ const Room = () => {
           if (currentUser) {
             setIsLoggedIn(true);
             setUsername(currentUser)
+            setLoginData(currentUser)
             checkRoomExists()
           } else {
             setIsLoggedIn(false);

@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { auth, db } from "../../utils/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Loadingscreen from "../LoadingScr/Loadingscreen";
+import { toast } from "react-toastify";
 
 function Account() {
   const [userData, setUserData] = useState(null);
@@ -40,44 +41,47 @@ function Account() {
   // Handles click on section (followers, following, etc.)
   const handleSectionClick = async (type) => {
     setLoading(false)
-    setSelectedSection(type);
-    let searchType = 'users'
-    let ids = [];
 
-    if (type === "followers") ids = followers;
-    else if (type === "following") ids = following;
-    else if (type === "friends") ids = friendList;
-    else if (type === "community") {
-      setDisplayData(community);
-      searchType = 'community'
-      ids = community
-    }
-
-    let data = []
-    for (let id of ids) {
-        const docRef = doc(db, searchType, id);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          if (searchType === 'community') {
-            const { name } = docSnap.data();
-            data.push(name); // just push name string for community
-          } else {
-            const { name, image } = docSnap.data();
-            data.push({ name, image }); // push full object for users
+    try{
+      setSelectedSection(type);
+      let searchType = 'users'
+      let ids = [];
+  
+      if (type === "followers") ids = followers;
+      else if (type === "following") ids = following;
+      else if (type === "friends") ids = friendList;
+      else if (type === "community") {
+        setDisplayData(community);
+        searchType = 'community'
+        ids = community
+      }
+  
+      let data = []
+      for (let id of ids) {
+          const docRef = doc(db, searchType, id);
+          const docSnap = await getDoc(docRef);
+          if (docSnap.exists()) {
+            if (searchType === 'community') {
+              const { name } = docSnap.data();
+              data.push(name); // just push name string for community
+            } else {
+              const { name, image } = docSnap.data();
+              data.push({ name, image }); // push full object for users
+            }
           }
         }
-      }
-      
-    console.log(data)
-
-    setDisplayData(data);
+  
+      setDisplayData(data);
+    }catch(err){
+    toast.error(`Account: Failed to fetch ${type}`)
+    }
     setLoading(true)
   };
 
   return (
     <div className="w-full h-[calc(100vh-110px)] text-white flex flex-col overflow-auto hidesilder">
       {/* Profile Card */}
-      <div className="w-full bg-gray-800 rounded-xl shadow-lg flex flex-col lg:flex-row items-center gap-6 relative">
+      <div className="w-full bg-gray-800 rounded-xl shadow-lg flex flex-col p-3 lg:flex-row items-center gap-6 relative">
         {/* Since text */}
         <div className="absolute top-2 right-4 text-[12px] text-gray-400">Since:</div>
 

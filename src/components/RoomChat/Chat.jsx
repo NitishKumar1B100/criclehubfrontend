@@ -9,6 +9,7 @@ import AgoraRTC from "agora-rtc-sdk-ng";
 import Loadingscreen from "../LoadingScr/Loadingscreen";
 import VideoCall from "./VideoCall";
 import { toast } from "react-toastify";
+import { useLogin } from "../../contexts/LoginCreadentialContext";
 
 const APP_ID =  import.meta.env.VITE_AGORA_APP_ID;
 
@@ -26,6 +27,8 @@ function Chat({ roomId, userId, roomInfo }) {
   const agoraClientRef = useRef(null);
   const navigate = useNavigate();
   const socket = getChatSocket();
+  
+      const { LoginData} = useLogin()
 
   useEffect(() => {
     if (!socket || !userId || !roomId) return;

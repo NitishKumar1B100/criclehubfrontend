@@ -1,11 +1,12 @@
-
 import { useCurrentSettings } from "../contexts/CurrentSettingsContext";
 import { usePhoneChat } from "../contexts/PhoneChatContext";
+import { useLogin } from "../contexts/LoginCreadentialContext";
 
 const Settings = () => {
   const { selectedCurrentSettings, setSelectedCurrentSettings } = useCurrentSettings();
 
   const {setSelectedPhoneChat } = usePhoneChat()
+    const { LoginData } = useLogin()
 
   const settingsTabs = [
     { id: "account", name: "Account" },
@@ -14,12 +15,12 @@ const Settings = () => {
   ];
 
   const showSettingsOption = (tab) => {
-    if (selectedCurrentSettings.type !== tab.id) {
-      setSelectedCurrentSettings({ type: tab.id})
-    }
+    setSelectedCurrentSettings({ type: tab.id})
     setSelectedPhoneChat(true)
-    
   }
+  
+  if(!LoginData) return <div className="w-full h-full flex bg-gray-900 text-white @container"></div>
+
 
   return (
     <div className="w-full h-full flex bg-gray-900 text-white @container">

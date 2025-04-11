@@ -3,15 +3,24 @@ import { usePhoneChat } from '../../contexts/PhoneChatContext';
 import DefaultChat from './DefaultChat';
 import Account from '../SettingOptions/Account';
 import { IoClose } from "react-icons/io5";
+import { useLogin } from '../../contexts/LoginCreadentialContext';
 
 function SettingsWindow() {
     
       const { selectedCurrentSettings  } = useCurrentSettings();
       const { setSelectedPhoneChat } = usePhoneChat()
       
+      
+           const { LoginData} = useLogin()
+      
       const hideSettingsOption = () => {
         setSelectedPhoneChat(false)
       };
+      
+      
+      if(!LoginData) return <div className="w-full p-6 text-white"></div>
+    
+      
       
   return (
    (
