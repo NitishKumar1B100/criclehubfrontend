@@ -29,6 +29,7 @@ function Navbar() {
       (currentUser) => {
         if (!currentUser) {
           setLoginData(null);
+          setSelectedPhoneChat(false);
           return;
         }
         setLoginData(currentUser);
@@ -66,7 +67,7 @@ function Navbar() {
       </div>
 
       {/* Nav Links */}
-      <div className="w-[100%] flex items-center text-white justify-between sm:gap-0 sm:w-0 ">
+      <div className={`${!LoginData ? 'w-[50%]':'w-[100%]'} flex items-center text-white justify-between sm:gap-0 sm:w-0  `}>
         <NavLink
           to="/"
           className={({ isActive }) =>
