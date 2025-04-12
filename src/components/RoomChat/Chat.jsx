@@ -10,7 +10,7 @@ import Loadingscreen from "../LoadingScr/Loadingscreen";
 import VideoCall from "./VideoCall";
 import { toast } from "react-toastify";
 
-const APP_ID =  import.meta.env.VITE_AGORA_APP_ID;
+const APP_ID = import.meta.env.VITE_AGORA_APP_ID;
 
 function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
   const [isChatVisible, setIsChatVisible] = useState(false);
@@ -26,7 +26,7 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
   const agoraClientRef = useRef(null);
   const navigate = useNavigate();
   const socket = getChatSocket();
-  
+
 
   useEffect(() => {
     if (!socket || !userId || !roomId) return;
@@ -44,7 +44,7 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
     socket.connect();
     socket.emit("join_room", joinPayload);
 
-    socket.on("user_joined", ({ users,joinedUser, token }) => {
+    socket.on("user_joined", ({ users, joinedUser, token }) => {
       setUsersJoined(users);
       setRoomToken(token);
       toast.info(`${joinedUser.name} Joined.`)
@@ -74,15 +74,15 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
       agoraClientRef.current = client;
 
       await client.join(APP_ID, roomId, roomToken, `${userId.uid}__${currentUserInfo.name}`);
-      
+
       client.on("user-published", async (user, mediaType) => {
         await client.subscribe(user, mediaType);
-      
+
         const [uid, displayName] = user.uid.split("__");
-      
+
         setRemoteTracks((prev) => {
           const existing = prev[user.uid] || {};
-      
+
           return {
             ...prev,
             [user.uid]: {
@@ -92,33 +92,33 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
             },
           };
         });
-      
+
         if (mediaType === "audio" && user.audioTrack) {
           user.audioTrack.play();
         }
       });
-      
+
 
       client.on("user-unpublished", (user, mediaType) => {
         setRemoteTracks((prev) => {
           const updated = { ...prev };
           const userTrack = updated[user.uid];
-      
+
           if (!userTrack) return prev;
-      
+
           if (mediaType === "video") {
             userTrack.videoTrack = null;
           } else if (mediaType === "audio") {
             // handle audio cleanup if needed
           }
-      
+
           return {
             ...updated,
             [user.uid]: userTrack,
           };
         });
       });
-      
+
     };
 
     initAgora();
@@ -126,7 +126,6 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
     return () => {
       tracks?.mic?.stop(); tracks?.mic?.close();
       tracks?.cam?.stop(); tracks?.cam?.close();
-      socket.disconnect();
     };
   }, [roomToken]);
 
@@ -183,9 +182,12 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
 
   const handleRoomDisconnect = async (peoples) => {
     const isUserInRoom = peoples.some(
-      (person) => person.userDetails.uid === userId.uid
+      (person) => person.userDetails.uid !== userId.uid
     );
-    if (!isUserInRoom) {
+    
+    if(!isUserInRoom) return 
+    
+    if (isUserInRoom) {
       socket.disconnect();
       setIsDisconnected(true);
     }
@@ -194,27 +196,61 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
       if (tracks.cam) {
         tracks.cam.stop();
         tracks.cam.close();
+
+        setLocalVideoEnabled(false)
+        await agoraClientRef.current.unpublish(tracks.cam);
       }
       if (tracks.mic) {
         tracks.mic.stop();
         tracks.mic.close();
+
+        setLocalAudioEnabled(false);
+        await agoraClientRef.current.unpublish(tracks.mic);
       }
 
       if (agoraClientRef) {
+        // setLocalAudioEnabled(false);
+        // setLocalVideoEnabled(false)
+
         await agoraClientRef.current.leave();
+
+        setRoomToken(null);
       }
     } catch (error) {
       toast.error("Error disconnecting.");
     }
   };
 
-  const handleUserDisconnect = () => {
+  const handleUserDisconnect = async () => {
     const remainingUsers = usersJoined.filter(
       (person) => person.userDetails.uid !== userId.uid
     );
     setUsersJoined(remainingUsers);
     socket.disconnect();
     setIsDisconnected(true);
+
+    try {
+      if (tracks.cam) {
+        tracks.cam.stop();
+        tracks.cam.close();
+        setLocalVideoEnabled(false)
+      }
+      if (tracks.mic) {
+        tracks.mic.stop();
+        tracks.mic.close();
+        setLocalAudioEnabled(false);
+      }
+
+      if (agoraClientRef) {
+        // setLocalAudioEnabled(false);
+        // setLocalVideoEnabled(false)
+
+        await agoraClientRef.current.leave();
+                setRoomToken(null);
+      }
+    } catch (error) {
+      toast.error("Error disconnecting.");
+    }
   };
 
   const rejoinRoom = () => {
@@ -256,14 +292,14 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
           </div>
 
           <div className="w-full h-[50px]">
-          <RoomFeatures
-            handleUserDisconnect={handleUserDisconnect}
-            usersJoined={usersJoined}
-            handleMicToggle={handleMicToggle}
-            handleCamToggle={handleCamToggle}
-            isMicOn={localAudioEnabled}
-            isCamOn={localVideoEnabled}
-          />
+            <RoomFeatures
+              handleUserDisconnect={handleUserDisconnect}
+              usersJoined={usersJoined}
+              handleMicToggle={handleMicToggle}
+              handleCamToggle={handleCamToggle}
+              isMicOn={localAudioEnabled}
+              isCamOn={localVideoEnabled}
+            />
           </div>
         </div>
       </div>
