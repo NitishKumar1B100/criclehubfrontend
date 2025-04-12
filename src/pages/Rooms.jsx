@@ -27,14 +27,21 @@ function Rooms() {
   
     const handleRoomList = (rooms) => {
       try {
-        setRooms(rooms);
+        const sortedRooms = [...rooms].sort((a, b) => {
+          const isAOwner = a.room.owner === LoginData?.uid;
+          const isBOwner = b.room.owner === LoginData?.uid;
+          return isBOwner - isAOwner; // true - false => owner goes first
+        });
+    
+        setRooms(sortedRooms);
       } catch (err) {
         toast.error("Failed to update room list.");
       } finally {
         setLoadingRooms(false);
       }
     };
-  
+
+    
     const checkUserExist = async () => {
       try {
         if (!LoginData || !LoginData.uid) {

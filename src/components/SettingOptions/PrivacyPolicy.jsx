@@ -1,6 +1,6 @@
 const PrivacyPolicy = () => {
   return (
-    <div className="w-full px-6 py-10 text-gray-200 bg-gray-900 h-full overflow-y-auto rounded-xl hidesilder">
+    <div className="w-full px-6 py-10 text-gray-200 bg-gray-900 max-h-[calc(100%-30px)] overflow-y-auto rounded-xl hidesilder">
       <h1 className="text-3xl font-bold text-white mb-6">🔐 Privacy Policy</h1>
       <p className="text-sm mb-8">Effective Date: <span className="text-blue-400">11-04-2025</span></p>
 
@@ -62,13 +62,6 @@ const PrivacyPolicy = () => {
           <li>Google OAuth and Firestore security rules to protect access.</li>
           <li>All communication with Socket.IO and Agora is encrypted.</li>
         </ul>
-      </section>
-
-      <section className="mb-10">
-        <h2 className="text-xl font-semibold text-red-400 mb-2">7. Children's Privacy</h2>
-        <p className="text-gray-300">
-          CircleHub is not intended for users under 13. If we detect data from a child, we will remove it immediately.
-        </p>
       </section>
 
       <section className="mb-10">

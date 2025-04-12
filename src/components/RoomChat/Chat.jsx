@@ -54,9 +54,10 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
       setMessages((prev) => [...prev, { sender, message }]);
     });
 
-    socket.on("user_left", ({ users }) => {
+    socket.on("user_left", ({ users , message}) => {
       handleRoomDisconnect(users);
       setUsersJoined(users);
+      toast.info(`${message} left.`)
     });
 
     return () => {
@@ -96,6 +97,8 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
         if (mediaType === "audio" && user.audioTrack) {
           user.audioTrack.play();
         }
+        
+        
       });
 
 
@@ -109,7 +112,7 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
           if (mediaType === "video") {
             userTrack.videoTrack = null;
           } else if (mediaType === "audio") {
-            // handle audio cleanup if needed
+            userTrack.audioTrack = null;
           }
 
           return {
@@ -139,8 +142,10 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
       try {
         const micTrack = await AgoraRTC.createMicrophoneAudioTrack();
         await agoraClientRef.current.publish([micTrack]);
+       // micTrack.play(); // optionally play locally too
         setTracks((prev) => ({ ...prev, mic: micTrack }));
         setLocalAudioEnabled(true);
+        
       } catch (err) {
         toast.error("Mic permission denied or error");
       }

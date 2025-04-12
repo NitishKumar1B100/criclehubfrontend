@@ -14,8 +14,8 @@ import { LoginPopUpProvider } from "./contexts/Loginpopup/Loginpopup";
 // 🔔 Import react-toastify
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import NotFound from "./pages/NotFound";
 import WithNavbarLayout from "./pages/WithNavbarLayout";
+import RestrictedAccess from "./pages/NotFound";
 
 function Layout() {
   return (
@@ -28,7 +28,7 @@ function Layout() {
 
       {/* Routes without Navbar */}
       <Route path="/room/:id" element={<Room />} />
-      <Route path="*" element={<NotFound />} />
+      <Route path="*" element={< RestrictedAccess/>} />
     </Routes>
   );
 }

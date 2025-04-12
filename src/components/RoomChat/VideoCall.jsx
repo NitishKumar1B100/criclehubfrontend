@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react";
 
 function VideoCall({ cameraTrack, micTrack, remoteTracks }) {
   const localVideoRef = useRef(null);
+  const localMicRef = useRef(null)
   const remoteContainerRef = useRef(null);
 
   useEffect(() => {
@@ -14,7 +15,7 @@ function VideoCall({ cameraTrack, micTrack, remoteTracks }) {
     if (remoteTracks && remoteContainerRef.current) {
       remoteContainerRef.current.innerHTML = ""; // Clear old tracks
 
-      Object.entries(remoteTracks).forEach(([uid, { videoTrack, displayName }]) => {
+      Object.entries(remoteTracks).forEach(([uid, {videoTrack, displayName }]) => {
         if (!videoTrack) return; // 👈 Skip if no videoTrack
 
         const wrapper = document.createElement("div");
@@ -46,6 +47,7 @@ function VideoCall({ cameraTrack, micTrack, remoteTracks }) {
       {/* Local Video */}
       <div className="h-72 bg-gray-700 rounded p-2 flex flex-col items-center justify-center w-full sm:w-80">
         <div ref={localVideoRef} className="w-full h-70 bg-gray-800 rounded" />
+        <div ref={localMicRef} className=""/>
         <p className="mt-2 text-white text-sm text-center">You</p>
       </div>
 

@@ -75,7 +75,7 @@ function RoompeopleBox({roomInfo, person, friendList, following, LoginUser }) {
                   rounded bg-cover bg-center bg-no-repeat
                   flex items-center justify-center`}
                   style={{backgroundImage:`url(${person.userDetails.image})`,
-                backgroundSize:'38% 50%'}}
+                backgroundSize:'38% 54%'}}
                 >
                   {/* <img src={`${person.userDetails.image}`} alt="" /> */}
                     <div className="absolute left-0 bottom-0 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-[10px]">

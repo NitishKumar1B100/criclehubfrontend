@@ -162,7 +162,7 @@ const CreateRoom = ({ setFormPopUp }) => {
               value={formData.size}
               onChange={handleChange}
               min="2"
-              max="100"
+              max="20"
               className="w-full p-2 border border-gray-500 rounded-lg bg-gray-700"
               required
             />

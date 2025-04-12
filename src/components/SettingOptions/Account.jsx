@@ -9,7 +9,6 @@ function Account() {
   const [selectedSection, setSelectedSection] = useState("");
   const [displayData, setDisplayData] = useState([]);
   const [loading, setLoading] = useState(true)
-  const [userloader, setUserLoader] = useState(false)
   
   const [contentType, setContentType] = useState('')
 

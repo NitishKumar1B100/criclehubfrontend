@@ -1,10 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
-import { auth } from "../utils/firebase";
-import { useEffect} from "react";
 import { useLogin } from "../contexts/LoginCreadentialContext";
-import { onAuthStateChanged } from "firebase/auth";
 import Login from "../components/Login/Login";
-import { toast } from "react-toastify";
 import { useDashboard } from "../contexts/DashboardLeftcontext";
 import { usePhoneChat } from "../contexts/PhoneChatContext";
 import { useCurrentSettings } from "../contexts/CurrentSettingsContext";
@@ -14,35 +10,12 @@ import { MdDashboard, MdMeetingRoom } from "react-icons/md";
 
 function Navbar() {
 
-  const { LoginData, setLoginData } = useLogin()
+  const { LoginData } = useLogin()
   const { setActiveOption } = useDashboard();
   const {setSelectedPhoneChat} = usePhoneChat()
   const {  setSelectedCurrentSettings } = useCurrentSettings();
   
   const navigate = useNavigate();
-
-
-  
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(
-      auth,
-      (currentUser) => {
-        if (!currentUser) {
-          setLoginData(null);
-          setSelectedPhoneChat(false);
-          return;
-        }
-        setLoginData(currentUser);
-      },
-      (error) => {
-        toast.error("Failed to track authentication state.");
-      }
-    );
-  
-    return () => unsubscribe();
-  }, []);
-  
-  
   
   const handleShowTheAccount = () => {
     setActiveOption('settings');
