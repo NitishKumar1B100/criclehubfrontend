@@ -15,7 +15,8 @@ function VideoCall({ cameraTrack, micTrack, remoteTracks }) {
       remoteContainerRef.current.innerHTML = ""; // Clear old tracks
 
       Object.entries(remoteTracks).forEach(([uid, { videoTrack, displayName }]) => {
-        
+        if (!videoTrack) return; // 👈 Skip if no videoTrack
+
         const wrapper = document.createElement("div");
         wrapper.className =
         "w-full h-72 bg-gray-700 rounded m-2 p-2 flex flex-col items-center justify-center";
