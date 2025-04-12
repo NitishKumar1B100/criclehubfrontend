@@ -4,7 +4,7 @@ import { useLogin } from "../../contexts/LoginCreadentialContext";
 import { deleteDoc, doc } from "firebase/firestore";
 
 function DangerZone() {
-    const { LoginData, setLoginData } = useLogin();
+    const { LoginData } = useLogin();
 
     const handleLogout = async () => {
         await logout()
@@ -14,7 +14,6 @@ function DangerZone() {
         try {
             await logout()
             await signInWithGoogle()
-            setLoginData(null);
             toast.success("Switched account successfully.");
         } catch (error) {
             toast.error("Could not switch account.");
