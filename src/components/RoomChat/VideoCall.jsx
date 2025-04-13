@@ -1,8 +1,7 @@
 import { useEffect, useRef } from "react";
 
-function VideoCall({ cameraTrack, micTrack, remoteTracks }) {
+function VideoCall({ cameraTrack, micTrack, remoteTracks, localVideoEnabled }) {
   const localVideoRef = useRef(null);
-  const localMicRef = useRef(null)
   const remoteContainerRef = useRef(null);
 
   useEffect(() => {
@@ -45,11 +44,12 @@ function VideoCall({ cameraTrack, micTrack, remoteTracks }) {
   return (
     <div className="w-full h-full flex flex-wrap items-start justify-center gap-4 p-4">
       {/* Local Video */}
-      <div className="h-72 bg-gray-700 rounded p-2 flex flex-col items-center justify-center w-full sm:w-80">
-        <div ref={localVideoRef} className="w-full h-70 bg-gray-800 rounded" />
-        <div ref={localMicRef} className=""/>
-        <p className="mt-2 text-white text-sm text-center">You</p>
-      </div>
+{
+  cameraTrack &&localVideoEnabled && (<div className="h-72 bg-gray-700 rounded p-2 flex flex-col items-center justify-center w-full sm:w-80">
+  <div ref={localVideoRef} className="w-full h-70 bg-gray-800 rounded" />
+    <p className="mt-2 text-white text-sm text-center">You</p>
+</div>)
+}
 
       {/* Remote Videos */}
       <div ref={remoteContainerRef} className="w-full flex flex-wrap justify-center items-start sm:w-80" />

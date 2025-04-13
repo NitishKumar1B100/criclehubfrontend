@@ -289,6 +289,7 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
                 cameraTrack={tracks.cam}
                 micTrack={tracks.mic}
                 remoteTracks={remoteTracks}
+                localVideoEnabled={localVideoEnabled}
               />
             ) : (
               <Loadingscreen />
