@@ -11,7 +11,7 @@ function DashboardLeft() {
         <div className='w-[100%] h-[calc(100vh-50px)] flex sm:h-[calc(100vh-60px)]'>
             <div className="w-[80px] h-full bg-gray-700 flex flex-col items-center justify-between">
 
-                <div className="flex flex-col justify-between items-center gap-10 mt-2">
+                <div className="flex flex-col justify-between items-center gap-5 mt-2">
                     <DashboardLeftOption type={'friends'}>
                         <FaUserFriends />
                     </DashboardLeftOption>

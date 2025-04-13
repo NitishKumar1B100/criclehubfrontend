@@ -3,7 +3,7 @@ import { createContext, useContext, useState } from "react";
 const FriendContext = createContext();
 
 export const FriendProvider = ({ children }) => {
-  const [selectedFriend, setSelectedFriend] = useState({type: '', id: '', name:'', image:''});
+  const [selectedFriend, setSelectedFriend] = useState({ id: '', name:'', image:''});
 
 
   return (

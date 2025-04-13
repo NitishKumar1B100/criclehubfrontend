@@ -67,15 +67,20 @@ const CommunityBox = ({ items, setComSetting, comSetting, setAddFriend, setAddFr
           await updateDoc(userRef, {
             community: updatedUserCommunities
           });
-      
+          
+          setSelectedCommunity(prev => ({ ...prev, id: '', name: ''}))
+          setSelectedPhoneChat(false);
+          
           toast.success("Successfully left the community.");
       
         } catch (error) {
           toast.error("Failed to leave the community.");
+          setSelectedPhoneChat(false);
         }
       };
       
       const handleDeleteCommunity = async (communityId) => {
+        
         try {
           const communityRef = doc(db, 'community', communityId);
           const communitySnap = await getDoc(communityRef);
@@ -115,10 +120,14 @@ const CommunityBox = ({ items, setComSetting, comSetting, setAddFriend, setAddFr
       
           // 6. Commit batch
           await batch.commit();
+         
+          setSelectedCommunity(prev => ({ ...prev, id: '', name: ''}))
+          setSelectedPhoneChat(false);
       
           toast.success("Community deleted successfully.");
         } catch (error) {
           toast.error("Failed to delete community.");
+          setSelectedPhoneChat(false);
         }
       };
       

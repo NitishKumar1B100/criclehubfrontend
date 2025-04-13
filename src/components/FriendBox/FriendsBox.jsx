@@ -5,7 +5,6 @@ import { useFriend } from "../../contexts/FriendContext";
 import { usePhoneChat } from "../../contexts/PhoneChatContext";
 import { useLogin } from "../../contexts/LoginCreadentialContext";
 import { toast } from "react-toastify";
-import Loadingscreen from "../LoadingScr/Loadingscreen";
 import { CgOptions } from "react-icons/cg";
 
 
@@ -41,16 +40,18 @@ const FriendsBox = ({ user, handleAddCommunity, chooseShowOption, setChooseShowO
 
             if (result.isFriend) {
                 setFetchingChat(false)
-                const data = { type: 'friend', id: user.id, name: userInfo.name, image: userInfo.image };
+                const data = {id: user.id, name: userInfo.name, image: userInfo.image };
                 setSelectedFriend(data);
                 setSelectedPhoneChat(true);
             } else {
                 toast.error("You both need to follow each other to chat.");
                 setFetchingChat(false)
+                setSelectedPhoneChat(false);
             }
         } catch (err) {
             toast.error("Error fetching friend status. Please try again later.");
             setFetchingChat(false)
+            setSelectedPhoneChat(false);
         }
     };
 
@@ -76,8 +77,11 @@ const FriendsBox = ({ user, handleAddCommunity, chooseShowOption, setChooseShowO
 
             // Optionally: clear chat from frontend
             setSelectedFriend({});
+            setSelectedFriend( { id:'', name: '', image: '' });
+            setSelectedPhoneChat(false);
         } catch (error) {
             toast.error("Error unfollowing user")
+            setSelectedPhoneChat(false);
         }
     };
 
@@ -91,9 +95,7 @@ const FriendsBox = ({ user, handleAddCommunity, chooseShowOption, setChooseShowO
 
     }
 
-
-
-    if (!userInfo) return (<Loadingscreen />); // or a loading spinner
+if(!userInfo) return <div></div>
 
     return (
         <div
@@ -118,8 +120,8 @@ const FriendsBox = ({ user, handleAddCommunity, chooseShowOption, setChooseShowO
                 {/* Friend Name + Loading Spinner */}
                 <div className="flex items-center justify-between w-full overflow-hidden">
                     <div
-                    title={userInfo.name}
-                     className="truncate text-white text-[16px] font-medium">
+                        title={userInfo.name}
+                        className="truncate text-white text-[16px] font-medium">
                         {userInfo.name}
                     </div>
 
@@ -135,25 +137,23 @@ const FriendsBox = ({ user, handleAddCommunity, chooseShowOption, setChooseShowO
                 onClick={ShowtheOptions}
             ><CgOptions /></button>
 
-            {
-                chooseShowOption === user.id && (
-                    <div className="absolute top-7 right-1 bg-gray-800 rounded shadow-lg z-[999]
-                    flex flex-col gap-2">
-                        <button
-                            onClick={handleUnfollow}
-                            className="text-red-500 hover:text-red-700 border-white border-b-1 p-2 text-[10px]"
-                        >
-                            Unfollow
-                        </button>
-                        <button
-                            onClick={(e) => handleAddCommunity(e, user.id)}
-                            className="text-blue-500 hover:text-blue-700 p-2 text-[10px]"
-                        >
-                            Add in Community
-                        </button>
-                    </div>
-                )
-            }
+            {chooseShowOption === user.id && (
+                <div className="absolute top-5 right-5 bg-gray-900 rounded-xl shadow-xl z-[999] w-44 sm:w-52 md:w-56">
+                    <button
+                        onClick={handleUnfollow}
+                        className="w-full text-left px-4 py-2 text-sm sm:text-[14px] text-red-500 hover:text-red-700 hover:bg-red-100 dark:hover:bg-red-900 dark:hover:text-red-300 transition duration-200 rounded-t-xl"
+                    >
+                        Unfollow
+                    </button>
+                    <button
+                        onClick={(e) => handleAddCommunity(e, user.id)}
+                        className="w-full text-left px-4 py-2 text-sm sm:text-[14px] text-blue-500 hover:text-blue-700 hover:bg-blue-100 dark:hover:bg-blue-900 dark:hover:text-blue-300 transition duration-200 rounded-b-xl"
+                    >
+                        Add to Community
+                    </button>
+                </div>
+            )}
+
         </div>
     );
 };

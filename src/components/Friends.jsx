@@ -6,7 +6,7 @@ import { db } from '../utils/firebase';
 import FriendsBox from './FriendBox/FriendsBox';
 import { toast } from 'react-toastify';
 import Loadingscreen from './LoadingScr/Loadingscreen';
-
+import { FaUserFriends, FaPlus, FaCheckCircle, FaSpinner, FaTimes } from 'react-icons/fa';
 
 function Friends() {
   const { FriendList, setFriendList } = useFriendList()
@@ -17,24 +17,28 @@ function Friends() {
   const [ownedCommunitiesList, setOwnedCommunitiesList] = useState([])
   const [addFriendloading, setAddFriendloading] = useState(false)
   const [addFriendloadingId, setAddFriendloadingId] = useState('')
-  
+
   const [chooseShowOption, setChooseShowOption] = useState(null)
+  
+  const [loadingFriend, setLoadingFriend] = useState(false)
+  
 
 
   const { LoginData } = useLogin()
-  
-  useEffect(()=>{
-    if(!LoginData){
+
+  useEffect(() => {
+    if (!LoginData) {
       setFriendList([])
     }
-  },[LoginData])
+  }, [LoginData])
 
   useEffect(() => {
     if (!LoginData || !LoginData.uid) return;
-  
+
+    setLoadingFriend(true)
     const userId = LoginData.uid;
     const userRef = doc(db, "users", userId);
-  
+
     const unsubscribe = onSnapshot(
       userRef,
       (docSnap) => {
@@ -42,28 +46,33 @@ function Friends() {
           toast.error("User data not found.");
           return;
         }
-  
+
         try {
           const data = docSnap.data();
           const following = data.following || [];
           const followers = data.followers || [];
-  
+
           const mutualIds = following.filter(id => followers.includes(id));
           const mutuals = mutualIds.map(id => ({ id }));
-  
+
           setFriendList(mutuals);
         } catch (err) {
           toast.error("Failed to load mutual friends.");
+          setLoadingFriend(false)
+          
         }
+        setLoadingFriend(false)
+        
       },
       (error) => {
         toast.error("Error fetching user data.");
+        setLoadingFriend(false)
       }
     );
-  
+
     return () => unsubscribe();
   }, [LoginData, setFriendList]);
-  
+
 
   const handleAddCommunity = async (e, addFriend) => {
     e.stopPropagation();
@@ -136,51 +145,51 @@ function Friends() {
       setAddFriendloading(false)
     }
   };
-  
+
   const handleAddFriendInCommunity = async (communityId, anotherUserId, alreadyJoined) => {
     if (alreadyJoined) {
       return toast.error("User already joined this community.");
     }
-    
+
     try {
       setAddFriendloading(true);
       setAddFriendloadingId(communityId)
       // 1. Reference to the community document
       const communityRef = doc(db, "community", communityId);
       const communitySnap = await getDoc(communityRef);
-  
+
       if (!communitySnap.exists()) {
         return toast.error("Community not found.");
       }
-  
+
       // 2. Reference to the user you're trying to add
       const userRef = doc(db, "users", anotherUserId);
       const userSnap = await getDoc(userRef);
-  
+
       if (!userSnap.exists()) {
         return toast.error("User not found.");
       }
-  
+
       const userData = userSnap.data();
       const userCommunities = userData.community || [];
-  
+
       // 3. Add community to user's joined list (if not already there)
       if (!userCommunities.includes(communityId)) {
         await updateDoc(userRef, {
           community: arrayUnion(communityId)
         });
       }
-  
+
       // 4. Add user to the community's joinedUsers array (if not already there)
       const communityData = communitySnap.data();
       const joinedUsers = communityData.joinedUsers || [];
-  
+
       if (!joinedUsers.includes(anotherUserId)) {
         await updateDoc(communityRef, {
           joinedUsers: arrayUnion(anotherUserId)
         });
       }
-  
+
       setAddFriendloading(false);
       setOwnedCommunitiesList([])
       setShowCommunity(false);
@@ -192,69 +201,100 @@ function Friends() {
       setAddFriendloading(false);
     }
   };
-  
+
   const handleCloseAddCommunityWdw = () => {
-  
+
     setAddFriendloading(false);
     setOwnedCommunitiesList([])
     setShowCommunity(false);
     setShowOptions(false);
     setChooseShowOption(null)
     setLoadingCommunity(false);
-  
+
   }
 
   return (
-    <div className="w-full h-full bg-gray-900 ">
+    <div className={` w-full ${loadingFriend ?'bg-gray-800 ':'bg-gray-900'}`}>
 
       {/* Friends List */}
-      <div className="w-full h-[calc(100vh-60px)] flex flex-col space-y-2 overflow-y-auto hidesilder p-2">
+      {loadingFriend ?(  <Loadingscreen/>)
+  :
+  (<div className="w-full h-[calc(100vh-60px)] flex flex-col space-y-2 overflow-y-auto hidesilder p-2">
         {FriendList.map((item) => (
           <FriendsBox
             key={item.id}
             user={item}
             setShowOptions={setShowOptions}
             showOptions={showOptions}
-            handleAddCommunity={handleAddCommunity} 
+            handleAddCommunity={handleAddCommunity}
             chooseShowOption={chooseShowOption}
             setChooseShowOption={setChooseShowOption}
-            />
+          />
         ))}
-      </div>
+      </div>)}
 
       {
         showCommunity && (
           <div className="absolute top-0 left-0 w-full h-full bg-gray-800 flex items-center justify-center z-[999] opacity-90">
             <div className="bg-gray-900 p-4 rounded-lg shadow-lg relative">
-            <button
-            className="absolute top-0 right-1 text-red-500 cursor-pointer text-[18px]"
-            onClick={handleCloseAddCommunityWdw}
-            >X</button>
+              <button
+                className="absolute top-0 right-1 text-red-500 cursor-pointer text-[18px]"
+                onClick={handleCloseAddCommunityWdw}
+              >  <FaTimes size={18} /></button>
               {
                 loadingCommunity ? (
-                  <Loadingscreen/>
+                  <Loadingscreen />
                 ) : (
-                  <div className="text-white p-2 flex flex-col items-center justify-between gap-2">
-
-                    {
-                      ownedCommunitiesList.map((community, index) => (
-                        <div key={index} className="flex items-center justify-between p-2 bg-gray-700 rounded-lg gap-3 
-                        min-w-[280px] max-w-[350px] ">
-
-                          <div className="flex items-center">
-                            <span>{community.name}</span>
-                          </div>
-                          <button className="bg-blue-600 text-white px-4 py-2 rounded-lg cursor-pointer"
-                          onClick={() => handleAddFriendInCommunity(community.id, community.anotherUserId, community.alreadyJoined)}
-                          >
-                            {(addFriendloading && addFriendloadingId === community.id) ?(<div className="ml-2 flex items-center justify-center h-full">
-                    <div className="w-8 h-8 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
-                  </div>): community.alreadyJoined ? "Already Joined" : "Add"}
-                          </button>
+                  <div className="text-white p-4 flex flex-col items-center gap-4 w-full">
+                    {ownedCommunitiesList.map((community, index) => (
+                      <div
+                        key={index}
+                        className="w-full max-w-md flex flex-row sm:flex-row sm:items-center justify-between bg-gray-800 p-4 rounded-xl shadow-md transition hover:shadow-lg gap-3 sm:gap-0"
+                      >
+                        {/* Community Info */}
+                        <div className="flex items-center gap-3">
+                          <FaUserFriends className="text-blue-400" size={20} />
+                          <span className="text-lg font-medium text-gray-100 truncate mr-2">
+                            {community.name}
+                          </span>
                         </div>
-                      ))
-                    }
+
+                        {/* Action Button */}
+                        <button
+                          onClick={() =>
+                            handleAddFriendInCommunity(
+                              community.id,
+                              community.anotherUserId,
+                              community.alreadyJoined
+                            )
+                          }
+                          className={` flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold transition duration-300 ${community.alreadyJoined
+                              ? "bg-green-700 text-white cursor-not-allowed"
+                              : "bg-blue-600 hover:bg-blue-700 text-white cursor-pointer"
+                            }`}
+                          disabled={
+                            community.alreadyJoined ||
+                            (addFriendloading && addFriendloadingId === community.id)
+                          }
+                        >
+                          {addFriendloading && addFriendloadingId === community.id ? (
+                            <FaSpinner className="animate-spin" size={16} />
+                          ) : community.alreadyJoined ? (
+                            <>
+                              <FaCheckCircle size={16} />
+                              Already Joined
+                            </>
+                          ) : (
+                            <>
+                              <FaPlus size={16} />
+                              Add
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    ))}
                   </div>
+
                 )
               }
             </div>

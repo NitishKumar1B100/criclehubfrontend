@@ -198,19 +198,27 @@ function Community() {
 
       {/* Add friend in community*/}
       {
-        AddFriend && (<div>
-          <div className="w-full h-screen z-[999] fixed top-0 left-0 flex items-center justify-center bg-gray-700 opacity-90">
-            <div className="relative w-[90%] sm:w-[450px] max-h-[600px] bg-gray-800 rounded p-4 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-800 p-2">
-              <div
-                onClick={() => setAddFriend(false)}
-                className="absolute top-0 right-0 bg-blue-900 w-7 h-7 cursor-pointer flex items-center justify-center text-gray-200 text-xl"><IoCloseSharp /></div>
+  AddFriend && (
+    <div className="fixed inset-0 z-[999] bg-black/50 flex items-center justify-center px-4">
+      <div className="relative w-full max-w-md max-h-[80vh] bg-gray-800 rounded-2xl p-5 shadow-lg overflow-y-auto scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-gray-900 transition-all duration-300">
+        
+        {/* Close Button */}
+        <button
+          onClick={() => setAddFriend(false)}
+          aria-label="Close modal"
+          className="cursor-pointer absolute top-1 right-1 text-white bg-gray-700 hover:bg-gray-600 p-2 rounded-full shadow-md transition"
+        >
+          <IoCloseSharp size={18} />
+        </button>
 
-              <AddFriendBox communityId={addFriendComId} userId={LoginData.uid} />
-
-            </div>
-          </div>
-        </div>)
-      }
+        {/* Modal Content */}
+        <div className="pt-2">
+          <AddFriendBox communityId={addFriendComId} userId={LoginData.uid} />
+        </div>
+      </div>
+    </div>
+  )
+}
     </div>
   )
 }

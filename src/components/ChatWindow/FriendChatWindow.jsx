@@ -284,7 +284,7 @@ useEffect(() => {
     return (
         <>
             <div className="hidesilder w-full h-full relative">
-                {(selectedFriend.id && selectedFriend.type) ? 
+                {(selectedFriend.id) ? 
                     (<Allpartofchat
                       handleShowFriendDetails={handleShowFriendDetails} 
                       FreindChatId={FreindChatId} 

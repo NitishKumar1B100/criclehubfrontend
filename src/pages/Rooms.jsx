@@ -14,6 +14,8 @@ function Rooms() {
   const { setLoginPopUp } = useLoginPopUp()
   const { LoginData } = useLogin()
   const [LoadingRooms, setLoadingRooms] = useState(true)
+  
+  const [roomInfoShow, SetRoomInfoSHow] = useState('')
 
   
 
@@ -124,7 +126,7 @@ function Rooms() {
               LoadingRooms ? (<Loadingscreen />) : (
                 <div className="hidesilder w-full h-full overflow-auto gap-5 flex flex-wrap items-start justify-start p-2">
                   {rooms.map((room) => (
-                    <Roombox key={room.id} roomData={room} />
+                    <Roombox key={room.id} roomData={room}  SetRoomInfoSHow={SetRoomInfoSHow} roomInfoShow={roomInfoShow}/>
                   ))}
                 </div>
               )

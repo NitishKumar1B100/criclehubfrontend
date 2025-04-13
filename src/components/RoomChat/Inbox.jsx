@@ -10,7 +10,7 @@ const Inbox = ({ messages, sendMessage, user}) => {
   }
 
   return (
-    <div className={`relative h-full flex flex-col bg-gray-900 transition-all duration-300 w-full`}>
+    <div className={`relative h-full flex flex-col bg-gray-800 transition-all duration-300 w-full`}>
 
       <div className="w-full p-3 bg-gray-700 text-lg font-semibold flex items-center justify-start gap-2">
       

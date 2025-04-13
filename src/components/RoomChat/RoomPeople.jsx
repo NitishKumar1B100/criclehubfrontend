@@ -5,12 +5,13 @@ import { db } from '../../utils/firebase';
 import Loadingscreen from '../LoadingScr/Loadingscreen';
 import { toast } from 'react-toastify';
 
-const RoomPeople = ({ peoples, roomInfo, LoginUser }) => {
+const RoomPeople = ({ peoples, roomInfo, LoginUser, roomId, socket}) => {
   const [people, setPeople] = useState([]);
   
     const [friendList, setFriendList] = useState([]);
     const [following, setFollowing] = useState([]);
     const scrollRef = useRef();
+    const [RoomInfo, setRoomInfo] = useState(null)
 
     useEffect(() => {
       if (!LoginUser || !LoginUser.uid) return;
@@ -68,6 +69,37 @@ const RoomPeople = ({ peoples, roomInfo, LoginUser }) => {
     el.addEventListener('wheel', onWheel, { passive: false });
     return () => el.removeEventListener('wheel', onWheel);
   }, []);
+  
+  useEffect(() => {
+    if (!roomId) return;
+
+    const roomRef = doc(db, "rooms", roomId);
+    const unsubscribe = onSnapshot(roomRef, (docSnap) => {
+      if (docSnap.exists()) {
+        const data = docSnap.data();
+        if (data?.room?.joinedUsers) {
+          setPeople(data.room.joinedUsers); // 👈 update people list in real-time
+          setRoomInfo(data)
+        }
+      } else {
+        toast.error("Room does not exist.");
+      }
+    }, (error) => {
+      toast.error("Something went wrong while fetching room info.");
+    });
+
+    return () => unsubscribe();
+  }, [roomId]);
+  
+  
+  useEffect(()=> {
+    setRoomInfo(roomInfo)
+  },[roomInfo])
+  
+  
+  const RemoveFriend = (id, name) => {
+    socket.emit("kick_user", { uid:id,name: name, roomId: roomId});
+  }
 
   return (
     <div
@@ -79,11 +111,14 @@ const RoomPeople = ({ peoples, roomInfo, LoginUser }) => {
       people.map((person, index) => (
         <div key={index} className="w-[160px] h-full flex-shrink-0 select-none">
           <RoompeopleBox 
+          roomId={roomId}
             person={person} 
-            roomInfo={roomInfo} 
+            roomInfo={RoomInfo} 
             friendList={friendList} 
             following={following}
             LoginUser={LoginUser}
+            RemoveFriend={RemoveFriend}
+            
           />
         </div>
       ))

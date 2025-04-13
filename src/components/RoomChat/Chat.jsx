@@ -190,6 +190,8 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
       (person) => person.userDetails.uid !== userId.uid
     );
     
+    //console.log(isUserInRoom)
+    
     if(!isUserInRoom) return 
     
     if (isUserInRoom) {
@@ -230,6 +232,7 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
     const remainingUsers = usersJoined.filter(
       (person) => person.userDetails.uid !== userId.uid
     );
+    
     setUsersJoined(remainingUsers);
     socket.disconnect();
     setIsDisconnected(true);
@@ -277,7 +280,7 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
   return (
     <div className="hidesilder w-full h-screen flex bg-gray-900 text-white p-2 rounded relative">
       <div className="w-full h-full flex-1 bg-gray-900 flex flex-col gap-1">
-        <div className="w-full h-full flex flex-col items-center justify-end gap-1">
+        <div className="w-full h-full flex flex-col items-center justify-end gap-1 relative">
           <div className="hidesilder w-full h-full overflow-y-auto">
             {roomToken && usersJoined.length ? (
               <VideoCall
@@ -292,8 +295,9 @@ function Chat({ roomId, userId, roomInfo, currentUserInfo }) {
             )}
           </div>
 
-          <div className="w-full h-[170px] overflow-x-auto">
-            <RoomPeople LoginUser={userId} peoples={usersJoined} roomInfo={roomInfo} />
+          <div className="w-full h-[170px] overflow-x-auto ">
+            <RoomPeople LoginUser={userId} peoples={usersJoined}
+             roomInfo={roomInfo} roomId={roomId} socket={socket}/>
           </div>
 
           <div className="w-full h-[50px]">

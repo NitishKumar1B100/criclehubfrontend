@@ -13,7 +13,7 @@ const CommunityChatBox = ({ CommunityName, CommunityId }) => {
   const [messages, setMessages] = useState([])
   const [currentMsg, setCurrentMsg] = useState('')
 
-  const [joinedUsers, setJoinedUsers] = useState(['asdf','asdfasdf']);
+  const [joinedUsers, setJoinedUsers] = useState([]);
 
   const { LoginData } = useLogin()
 
