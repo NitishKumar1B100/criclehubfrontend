@@ -7,7 +7,7 @@ function LoginPage() {
     try {
       await signInWithGoogle(); // Your actual sign-in function
     } catch (err) {
-      toast.error("Google Sign-in error:", err);
+      toast.error("Google Sign-in error:", 'Login.jsx');
     }
   };
 

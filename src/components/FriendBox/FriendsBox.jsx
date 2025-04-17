@@ -17,20 +17,28 @@ const FriendsBox = ({ user, handleAddCommunity, chooseShowOption, setChooseShowO
 
     useEffect(() => {
         const fetchUserInfo = async () => {
+            if (!user || !user.id) {
+                toast.error("User ID is not available.");
+                return;
+            }
+            
             try {
                 const docRef = doc(db, "users", user.id);
                 const docSnap = await getDoc(docRef);
-
+    
                 if (docSnap.exists()) {
                     setUserInfo(docSnap.data());
+                } else {
+                    toast.error("No data found for this user.");
                 }
             } catch (error) {
-                toast.error('Error fetching user info. Please try again later.');
+                toast.error("Error fetching user info. Please try again later.");
             }
         };
-
+    
         fetchUserInfo();
-    }, [user.id]);
+    }, [user]);
+    
 
     const selectFriend = async () => {
         setFetchingChat(true)

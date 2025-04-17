@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
-import { auth, db } from "../../utils/firebase";
+import { db } from "../../utils/firebase";
 import { doc, getDoc } from "firebase/firestore";
 import Loadingscreen from "../LoadingScr/Loadingscreen";
 import { toast } from "react-toastify";
+import { useLogin } from "../../contexts/LoginCreadentialContext";
 
 function Account() {
   const [userData, setUserData] = useState(null);
@@ -10,32 +11,35 @@ function Account() {
   const [displayData, setDisplayData] = useState([]);
   const [loading, setLoading] = useState(true)
   
+      const { LoginData } = useLogin();
+  
   const [contentType, setContentType] = useState('')
 
   useEffect(() => {
-    
-      const fetchUserData = async () => {
-        try{
-        const user = auth.currentUser;
-        if (!user) return;
+    const fetchUserData = async () => {
+      try {
+        if (!LoginData) {
+          // You might want to return or log something if LoginData is not available.
+          toast('Login Data not found.')
+          return;
+        }
   
-          const docRef = doc(db, "users", user.uid);
-          const docSnap = await getDoc(docRef);
-    
-          if (docSnap.exists()) {
-            setUserData(docSnap.data());
-          }else{
-            toast.error("Account: user id doesn't exit")
-          }
-
-      }catch(err){
-        toast.error("Account: Coudn't load the data.")
+        const docRef = doc(db, "users", LoginData.uid);
+        const docSnap = await getDoc(docRef);
+  
+        if (docSnap.exists()) {
+          setUserData(docSnap.data());
+        } else {
+          toast.error("Account: user id doesn't exist.");
+        }
+      } catch (err) {
+        toast.error(`Account: Couldn't load the data. Error: ${err.message}`);
       }
-      };
+    };
   
-      fetchUserData();
- 
-  }, []);
+    fetchUserData();
+  }, [LoginData]);  // You may want to add LoginData as a dependency if it's being set dynamically.
+  
 
   if (!userData) {
     return (

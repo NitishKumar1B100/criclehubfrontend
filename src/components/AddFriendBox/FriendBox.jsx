@@ -43,9 +43,6 @@ const FriendBox = ({ member, isFriend, communityId, ownerId, following}) => {
     
     const handleUnfollow = async (e) => {
         e.stopPropagation(); // Prevent default behavior of the button
-        const confirmed = window.confirm(`Are you sure you want to unfollow ${member.name || 'this user'}?`);
-
-        if (!confirmed) return;
         
         try {
           const currentUserRef = doc(db, 'users', LoginData.uid);

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useCommunity } from '../../contexts/CommunityContext'
 import DefaultChat from './DefaultChat'
 import { FaChevronLeft } from "react-icons/fa";
@@ -12,6 +12,8 @@ const CommunityChatBox = ({ CommunityName, CommunityId }) => {
   const { setSelectedPhoneChat } = usePhoneChat()
   const [messages, setMessages] = useState([])
   const [currentMsg, setCurrentMsg] = useState('')
+  const messagesEndRef = useRef(null);
+
 
   const [joinedUsers, setJoinedUsers] = useState([]);
 
@@ -85,11 +87,16 @@ const CommunityChatBox = ({ CommunityName, CommunityId }) => {
     };
   }, [CommunityId]);
 
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
+
 
   const handleSendMessage = async () => {
     if (!currentMsg.trim() || !LoginData?.uid) return
-    
-    let userInf 
+
+    let userInf
 
     const googleProfile = LoginData.providerData.find(
       (provider) => provider.providerId === "google.com"
@@ -124,6 +131,11 @@ const CommunityChatBox = ({ CommunityName, CommunityId }) => {
     }
   }
 
+  const scrollToBottom = () => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+
   return (
     <div className="hidesilder w-full h-full flex flex-col bg-gray-900 text-white">
 
@@ -152,8 +164,7 @@ const CommunityChatBox = ({ CommunityName, CommunityId }) => {
         {messages.map((msg) => (
           <div
             key={msg.id}
-            className={`max-w-[300px] mt-2 bg-gray-800 rounded-md ${msg.senderId === LoginData.uid ? 'ml-auto' : ''
-              }`}
+            className={`max-w-[300px] mt-2 bg-gray-800 rounded-md ${msg.senderId === LoginData.uid ? 'ml-auto' : ''}`}
           >
             <div className="p-2">
               <span>{msg.senderName || msg.senderId}</span>
@@ -161,7 +172,9 @@ const CommunityChatBox = ({ CommunityName, CommunityId }) => {
             </div>
           </div>
         ))}
+        <div ref={messagesEndRef} />
       </div>
+
 
       {/* Input */}
       <div className="flex items-center p-2 bg-gray-900">
@@ -201,9 +214,9 @@ function CommunityChatWIndow() {
 
     return () => unsubscribe();
   }, [LoginData?.uid, selectedCommunity?.id, setSelectedCommunity]);
-  
-  if(!LoginData) return <div className="hidesilder w-full h-full"></div>
-  
+
+  if (!LoginData) return <div className="hidesilder w-full h-full"></div>
+
   return (
     <div className="hidesilder w-full h-full ">
       {
