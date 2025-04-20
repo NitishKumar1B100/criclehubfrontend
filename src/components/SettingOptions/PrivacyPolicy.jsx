@@ -1,6 +1,6 @@
 const PrivacyPolicy = () => {
   return (
-    <div className="w-full px-6 py-10 text-gray-200 bg-gray-900 max-h-[calc(100%-30px)] overflow-y-auto rounded-xl hidesilder">
+    <div className="w-full px-6 py-10 text-gray-200 bg-gray-800 max-h-[calc(100%-30px)] overflow-y-auto rounded-xl hidesilder">
       <h1 className="text-3xl font-bold text-white mb-6">🔐 Privacy Policy</h1>
       <p className="text-sm mb-8">Effective Date: <span className="text-blue-400">11-04-2025</span></p>
 
@@ -82,7 +82,7 @@ const PrivacyPolicy = () => {
       <section>
         <h2 className="text-xl font-semibold text-red-400 mb-2">10. Contact Us</h2>
         <p className="text-gray-300">
-          Have questions or need support? Reach us at <span className="text-blue-400">nitishkumar235969@gmail.com</span>.
+          Have questions or need support? Reach us at <span className="text-blue-400">nimravirk1802@gmail.com</span>.
         </p>
       </section>
     </div>
