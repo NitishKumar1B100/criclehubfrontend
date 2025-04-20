@@ -292,7 +292,7 @@ function FriendChatWindow() {
     <div className="w-8 h-8 border-4 border-blue-500 border-dashed rounded-full animate-spin"></div>
   </div>)
 
-  if (!LoginData) return <div className="hidesilder w-full h-full bg-gray-800 relative"></div>
+  if (!LoginData) return <div className="hidesilder w-full h-full bg-gray-700 relative"></div>
 
   return (
     <>
