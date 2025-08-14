@@ -110,19 +110,20 @@ function AddFriendBox({ communityId, userId }) {
   if (fetchingFriend || fetchingCommunity) return (<Loadingscreen/>)
 
   return (
-    <div className='p-2 space-y-2 '>
-      
+    <div className=''>
+      <h2 className='pb-2 text-white'>Member List</h2>
       {/* Host */}
 {owner && (
         <div className="flex flex-row items-center bg-gray-600 p-2 rounded-lg">
         <img src={owner.image || '/default-avatar.png'} alt={owner.name}
           className="w-10 h-10 rounded-full mr-2" />
         <span className='text-white'>{owner.name}</span>
-        <span className='text-gray-200 text-[12px] ml-2 bg-blue-700 p-1 rounded-full'>Host</span>
+        <span className='text-gray-200 text-[12px] ml-2 bg-blue-700 p-1 rounded-full '>Host</span>
       </div>
 )}
       
-      {communityMembers.map(member => (
+      <div className="flex flex-col gap-2 mt-2">
+              {communityMembers.map(member => (
           <FriendBox
           key={member.id}
           member={member}
@@ -133,6 +134,7 @@ function AddFriendBox({ communityId, userId }) {
         />
         
       ))}
+      </div>
     </div>
   )
 }

@@ -9,6 +9,10 @@ const FriendBox = ({ member, isFriend, communityId, ownerId, following}) => {
     const { LoginData } = useLogin()
   
     const handleRemoveFriend = async () => {
+      if(ownerId !== LoginData.uid) {
+        alert("You are not the owner of this community, you can't remove members.")
+        return
+      } 
       try {
         const communityRef = doc(db, 'community', communityId)
         const userRef = doc(db, 'users', member.id)
@@ -28,6 +32,10 @@ const FriendBox = ({ member, isFriend, communityId, ownerId, following}) => {
     }
     
     const handleTransferHost = async () => {
+      if(ownerId !== LoginData.uid) {
+        alert("You are not the owner of this community, you can't transfer host.")
+        return
+      } 
       const confirm = window.confirm(`Are you sure you want to transfer host to ${member.name}?`);
       if (!confirm) return;
   
@@ -122,14 +130,14 @@ const FriendBox = ({ member, isFriend, communityId, ownerId, following}) => {
                 )}
                 
                 {
-                    ownerId !== member.id && (
+                    ownerId ==  LoginData.uid && (
                       <span className='text-red-300 text-sm ml-1 cursor-pointer select-none'
                       onClick={handleRemoveFriend}>remove</span>
                     )
                 }
                 
                 {
-                  ownerId !== member.id && (
+                  ownerId ==  LoginData.uid && (
                     <span className='text-green-400 text-sm ml-2 cursor-pointer select-none'
                     onClick={handleTransferHost}>Host</span>
                   )

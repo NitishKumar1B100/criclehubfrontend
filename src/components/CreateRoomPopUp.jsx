@@ -12,6 +12,7 @@ const CreateRoom = ({ setFormPopUp }) => {
 
       const [loading, setLoading] = useState(false)
       
+      
       useEffect(()=>{
         if(!LoginData){
           setFormPopUp(false);
@@ -34,6 +35,7 @@ const CreateRoom = ({ setFormPopUp }) => {
   
   
   const handleSubmit = async (e) => {
+    setLoading(true)
     e.preventDefault();
     e.stopPropagation();
   
@@ -57,7 +59,6 @@ const CreateRoom = ({ setFormPopUp }) => {
   
     try {
       // Ensure the formData contains `roomName` and `size`
-      setLoading(true)
       if (!formData.size) {
         toast.error(`Room name and size are required`);
         return;
@@ -94,7 +95,7 @@ const CreateRoom = ({ setFormPopUp }) => {
 
   return (
     <div
-      className="flex justify-center items-center min-h-screen bg-[#000000af] text-white"
+      className="flex justify-center items-center w-screen min-h-screen bg-[#000000af] text-white z-[999] absolute top-0 left-0"
       onClick={() => setFormPopUp(false)}
     >
       <div
@@ -102,7 +103,7 @@ const CreateRoom = ({ setFormPopUp }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="w-full h-[50px] flex items-center justify-between">
-          <h2 className="text-2xl font-semibold mb-4">{loading ? <Loadingscreen/> : 'Create a Room'}</h2>
+          <h2 className="text-2xl font-semibold mb-4">Create a Room</h2>
           <button
             className="text-3xl cursor-pointer"
             onClick={() => setFormPopUp(false)}
@@ -171,9 +172,9 @@ const CreateRoom = ({ setFormPopUp }) => {
           <button
             type="submit"
             className="w-full cursor-pointer flex items-center justify-center gap-2 bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition"
+            disabled={loading}
           >
-            <FaLock size={16} />
-            Create Room
+            {loading ? <Loadingscreen/>:'Create Room' }
           </button>
         </form>
       </div>

@@ -113,18 +113,18 @@ function Rooms() {
       <div className="w-full h-full">
         <div className="w-[100%] h-[calc(100vh-60px)]">
 
-          <div className="w-full h-[80px] flex justify-start items-center p-2">
-            <div className="w-[100px] h-[50px] flex gap-3 text-white text-[19px]">
+          <div className="w-full h-[60px] flex justify-start items-center p-2">
+            <div className="w-[100px] h-[40px] flex gap-3 text-white text-[19px]">
               <button
                 onClick={handleCreatingRoom}
-                className='w-full h-full cursor-pointer bg-blue-700 rounded'>Create</button>
+                className='w-full h-full cursor-pointer bg-blue-700 rounded z-[99]'>Create</button>
             </div>
           </div>
           {/* Room List */}
-          <div className="w-full h-[calc(100vh-180px)]">
+          <div className="w-[100%] h-[calc(100vh-130px)] lg:h-[calc(100vh-60px)] lg:absolute lg:top-[60px] flex justify-center">
             {
               LoadingRooms ? (<Loadingscreen />) : (
-                <div className="hidesilder w-full h-full overflow-auto gap-5 flex flex-wrap items-start justify-start p-2">
+                <div className="hidesilder lg:w-[80%]  w-full h-full overflow-auto gap-5 inline-flex flex-wrap justify-start items-start p-2">
                   {rooms.map((room) => (
                     <Roombox key={room.id} roomData={room}  SetRoomInfoSHow={SetRoomInfoSHow} roomInfoShow={roomInfoShow}/>
                   ))}

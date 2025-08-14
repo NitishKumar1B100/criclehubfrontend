@@ -73,17 +73,17 @@
 }
 
 
-@media (min-width:720px) {
+@media (min-width:740px) {
   .hide-chat-window-button{
     display: none;
   }
   .room-boxes{
-  width: 330px;
+  width: 350px;
   }
 }
 
 @media (min-width:850px) {
   .room-boxes{
-  width: 400px;
+  width: 380px;
   }
 }

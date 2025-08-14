@@ -16,6 +16,14 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import WithNavbarLayout from "./pages/WithNavbarLayout";
 import RestrictedAccess from "./pages/NotFound";
+import AdminProtectedRoute from "./AdminCom/AdminProtectedRoute";
+import AdminInfo from "./AdminCom/adminLayout/AdminInfo";
+import AdminReports from "./AdminCom/adminLayout/AdminReports";
+import AdminCommunity from "./AdminCom/adminLayout/AdminCommunity";
+import AdminManageUsers from "./AdminCom/adminLayout/AdminManageUsers";
+import AdminRoom from "./AdminCom/adminLayout/AdminRoom";
+import Banned from "./pages/Banned";
+import { BannedProvider } from "./contexts/BannedContext";
 
 function Layout() {
   return (
@@ -28,7 +36,21 @@ function Layout() {
 
       {/* Routes without Navbar */}
       <Route path="/room/:id" element={<Room />} />
-      <Route path="*" element={< RestrictedAccess/>} />
+
+      {/* Admin Routes */}
+      <Route path="/admin" element={<AdminProtectedRoute />}>
+        <Route index element={<AdminInfo />} />
+        <Route path="users" element={<AdminManageUsers />} />
+        <Route path="users/:uid" element={<AdminManageUsers />} />
+        <Route path="community" element={<AdminCommunity />} />
+        <Route path="community/:id" element={<AdminCommunity />} />
+        <Route path="rooms" element={<AdminRoom />} />
+        <Route path="reports" element={<AdminReports />} />
+      </Route>
+
+      <Route path="/banned" element={<Banned />} />
+
+      <Route path="*" element={<RestrictedAccess />} />
     </Routes>
   );
 }
@@ -44,8 +66,10 @@ function App() {
                 <PhoneChatProvider>
                   <LoginProvider>
                     <FriendListProvider>
-                      <Layout />
-                      <ToastContainer position="top-right" autoClose={3000} />
+                      <BannedProvider>
+                        <Layout />
+                        <ToastContainer position="top-right" autoClose={3000} />
+                      </BannedProvider>
                     </FriendListProvider>
                   </LoginProvider>
                 </PhoneChatProvider>

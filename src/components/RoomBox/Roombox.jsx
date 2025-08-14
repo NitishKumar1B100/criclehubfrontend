@@ -6,8 +6,10 @@ import { toast } from 'react-toastify';
 import { doc, getDoc } from 'firebase/firestore';
 import { db } from '../../utils/firebase';
 import Loadingscreen from '../LoadingScr/Loadingscreen';
+import { MdPeopleAlt } from "react-icons/md";
 
 const Roombox = ({ roomData, roomInfoShow, SetRoomInfoSHow }) => {
+  console.log(roomData)
   const [members, setMembers] = useState([]);
   const { setLoginPopUp } = useLoginPopUp();
   const { LoginData } = useLogin();
@@ -36,10 +38,10 @@ const Roombox = ({ roomData, roomInfoShow, SetRoomInfoSHow }) => {
   }, [roomData]);
 
   const handleShowOnwerInfo = async () => {
-    
+
     SetRoomInfoSHow(prev => prev === roomData.id ? '' : roomData.id)
     setLoadingOwnerInfo(true)
-    
+
     const docRef = doc(db, "users", roomData.createdBy.uid);
     const docSnap = await getDoc(docRef);
 
@@ -53,7 +55,7 @@ const Roombox = ({ roomData, roomInfoShow, SetRoomInfoSHow }) => {
     } else {
       toast.error('User not exist.')
     }
-    
+
     setLoadingOwnerInfo(false)
   }
 
@@ -62,7 +64,7 @@ const Roombox = ({ roomData, roomInfoShow, SetRoomInfoSHow }) => {
 
   return (
     <div
-      className={`w-full h-[350px] rounded-lg shadow-lg overflow-hidden room-boxes 
+      className={`w-full h-[350px] rounded-lg shadow-lg overflow-hidden room-boxes
     ${isOwner ? 'border-2 border-blue-600' : 'bg-gray-700'} 
     ${isFull ? 'hover:border-red-600 border-2' : ''}`}
     >
@@ -78,24 +80,25 @@ const Roombox = ({ roomData, roomInfoShow, SetRoomInfoSHow }) => {
         </button>
 
         {roomInfoShow === roomData.id && (
-          <div className="absolute top-7 right-8 z-50 bg-gray-800 text-white rounded-xl shadow-lg p-4 w-64 sm:w-72 transition-all">
+          <div className="absolute top-7 right-8 z-50 bg-gray-800 text-white rounded-xl shadow-lg p-4 w-45 h-40 transition-all">
             {
-              loadownerInfo ? (<Loadingscreen/>): (<div className="flex flex-col items-center text-center space-y-3">
+              loadownerInfo ? (<Loadingscreen />) : (<div className="flex flex-col items-center text-center ">
 
                 {/* Creator Info */}
-                <h4 className="text-sm font-semibold text-gray-300">Created By</h4>
+
                 <img
                   src={ownerInfo.img}
                   alt={ownerInfo.name}
-                  className="w-16 h-16 rounded-full border-2 border-blue-500 object-cover"
+                  className="w-13 h-13 rounded-full border-2 border-blue-500 object-cover"
                 />
-                <p className="text-base font-medium">{ownerInfo.name}</p>
-  
+                <h4 className="text-[9px] font-semibold text-gray-300b pt-1">Created By</h4>
+                <p className="text-base font-medium ">{ownerInfo.name}</p>
+
                 {/* Divider */}
                 <hr className="w-full border-gray-600" />
-  
+
                 {/* Creation Time */}
-                <h4 className="text-sm font-semibold text-gray-300">Created At</h4>
+                <h4 className="text-sm font-semibold text-gray-300 pt-1">Created At</h4>
                 <p className="text-xs text-gray-400">{roomData.createdAt}</p>
               </div>)
             }
@@ -105,7 +108,7 @@ const Roombox = ({ roomData, roomInfoShow, SetRoomInfoSHow }) => {
       </div>
 
       {/* People in the Room */}
-      <div className="hidesilder w-full h-[calc(100%-100px)] overflow-y-auto p-4">
+      <div className="hidesilder w-full h-[calc(100%-90px)] overflow-y-auto p-4">
         <div className="space-y-3">
           {members.map((member, index) => (
             <div key={index} className="flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-600 transition-colors">
@@ -133,12 +136,16 @@ const Roombox = ({ roomData, roomInfoShow, SetRoomInfoSHow }) => {
       </div>
 
       {/* Join Button */}
-      <div className={`w-full h-[58px]`}>
+      <div className="w-full relative">
+                {/* Icon and Room Size */}
+        <div className="absolute top-1/2 right-3 -translate-y-1/2 flex items-center gap-1 text-white">
+          <MdPeopleAlt size={20} />
+          <span>{roomData.room.size}</span>
+        </div>
         {
           isFull ? (
             <button
-              className={`w-full h-full text-white text-[18px] hover:text-red-600
-               bg-gray-800 rounded-b-lg cursor-not-allowed `}
+              className="w-full h-[48px] text-white text-[18px] bg-gray-800 rounded-b-lg cursor-not-allowed hover:text-red-600"
               disabled
             >
               Room is Full
@@ -146,13 +153,16 @@ const Roombox = ({ roomData, roomInfoShow, SetRoomInfoSHow }) => {
           ) : (
             <button
               onClick={openRoomWindow}
-              className={`w-full h-full text-white text-[18px]
-              bg-blue-600 rounded-b-lg cursor-pointer`}>
+              className="w-full h-[48px] text-white text-[18px] bg-blue-600 rounded-b-lg cursor-pointer"
+            >
               Join the Room
             </button>
           )
         }
+
+
       </div>
+
     </div>
   );
 };

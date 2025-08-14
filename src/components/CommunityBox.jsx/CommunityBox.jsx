@@ -135,7 +135,7 @@ const CommunityBox = ({ items, setComSetting, comSetting, setAddFriend, setAddFr
     return (
         <div
             onClick={(e) => handleSelectCommunity(e)}
-            className={`w-full h-[60px] relative cursor-pointer rounded p-2 text-white flex justify-between items-center p-1
+            className={`w-full min-h-[60px] relative cursor-pointer rounded p-2 text-white flex justify-between items-center p-1
         ${selectedCommunity.id === items.id ? 'bg-blue-800' : 'bg-gray-800'}`}>
             <div className="">
                 {items.name}
@@ -149,7 +149,7 @@ const CommunityBox = ({ items, setComSetting, comSetting, setAddFriend, setAddFr
                 (comSetting == items.id) && (<div
                     className="select-none w-[130px] 
                 z-[999] rounded bg-gray-800 flex flex-col justify-center items-center 
-                absolute top-8 right-3 ">
+                absolute top-7 right-5">
 
 
                     <button

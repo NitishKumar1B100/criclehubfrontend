@@ -80,8 +80,6 @@
         <li><strong>Follow users</strong> to become friends and <strong>chat privately</strong>.</li>
         <li><strong>Create communities</strong> to gather people around shared interests.</li>
     </ul>
-    <h2>License</h2>
-    <p>This project is licensed under the <a class="link" href="LICENSE" target="_blank">MIT License</a>.</p>
     <h2>Acknowledgements</h2>
     <ul>
         <li><a class="link" href="https://firebase.google.com/" target="_blank">Firebase</a></li>

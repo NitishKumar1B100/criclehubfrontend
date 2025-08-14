@@ -5,20 +5,21 @@ import { toast } from 'react-toastify'
 import { FaHeart } from "react-icons/fa";
 import { FaHeartBroken } from "react-icons/fa";
 
-function RoompeopleBox({ roomInfo, person, friendList, following, LoginUser, roomId, RemoveFriend}) {
+function RoompeopleBox({ roomInfo, person, friendList, following, LoginUser, roomId, RemoveFriend }) {
   const [isFollowing, setIsFollwing] = useState(false)
   const [isFreindList, setIsFriendList] = useState(false)
   const [showOptions, setShowOptions] = useState(false);
 
   useEffect(() => {
-    setIsFollwing(following.includes(person.uid))
-    setIsFriendList(friendList.includes(person.uid))
-  }, [friendList, following])
-
+    setIsFollwing(Array.isArray(following) && following.includes(person.uid));
+    setIsFriendList(Array.isArray(friendList) && friendList.includes(person.uid));
+  }, [friendList, following, person.uid]);
 
 
   const handleFollow = async (targetUid) => {
     if (!LoginUser?.uid || !targetUid) return;
+
+    setIsFollwing(true); // ✅ Update instantly for UI
 
     const currentUserRef = doc(db, "users", LoginUser.uid);
     const targetUserRef = doc(db, "users", targetUid);
@@ -32,62 +33,59 @@ function RoompeopleBox({ roomInfo, person, friendList, following, LoginUser, roo
           followers: arrayUnion(LoginUser.uid),
         }),
       ]);
-
-      setIsFollwing(true);
       toast.success("Followed successfully!");
     } catch (err) {
+      setIsFollwing(false); // rollback if failed
       toast.error("Failed to follow the user.");
     }
   };
 
-
-
   const handleUnFollow = async (targetUid) => {
     if (!LoginUser?.uid) return;
+
+    setIsFollwing(false); // ✅ Update instantly for UI
 
     const currentUserRef = doc(db, "users", LoginUser.uid);
     const targetUserRef = doc(db, "users", targetUid);
 
     try {
-      // Remove targetUid from current user's following list
-      await updateDoc(currentUserRef, {
-        following: arrayRemove(targetUid),
-      });
-
-      // Remove current user from target user's followers list
-      await updateDoc(targetUserRef, {
-        followers: arrayRemove(LoginUser.uid),
-      });
-
-      setIsFollwing(false);
-      toast.success("Unfollowed successfully")
+      await Promise.all([
+        updateDoc(currentUserRef, {
+          following: arrayRemove(targetUid),
+        }),
+        updateDoc(targetUserRef, {
+          followers: arrayRemove(LoginUser.uid),
+        }),
+      ]);
+      toast.success("Unfollowed successfully");
     } catch (err) {
-      toast.error("Error unfollowing user")
+      setIsFollwing(true); // rollback if failed
+      toast.error("Error unfollowing user");
     }
   };
-  
+
   const handleMouseEnter = () => {
-    if(LoginUser.uid !== person.uid){
+    if (LoginUser.uid !== person.uid) {
       setShowOptions(true)
     }
   }
-  
+
   const handleRemovePerson = (name) => {
     RemoveFriend(person.uid, name)
   }
-  
+
   const handleTransferOwnership = async () => {
     try {
       const roomRef = doc(db, "rooms", roomId);
       const roomSnap = await getDoc(roomRef);
-  
+
       if (!roomSnap.exists()) {
         toast.error("Room not found.");
         return;
       }
-  
+
       const roomData = roomSnap.data();
-  
+
       // Correct comparison
       if (roomData.room.owner === LoginUser.uid) {
         // Transfer ownership
@@ -102,90 +100,107 @@ function RoompeopleBox({ roomInfo, person, friendList, following, LoginUser, roo
       toast.error("Something went wrong during ownership transfer.");
     }
   };
-  
-  
 
-  return (
-    <div
-      className={`w-full h-full ${(isFreindList) ? "border-blue-700 border-2" : "bg-gray-900"}  inline-block rounded p-1 relative`}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={() => setShowOptions(false)}>
 
-      <div className={`w-full h-full `}>
-        <div
-          className={`h-full w-full relative
-                  rounded bg-cover bg-center bg-no-repeat
-                  flex items-center justify-center`}
-          style={{
-            backgroundImage: `url(${person.userDetails.image})`,
-            backgroundSize: '38% 54%'
-          }}
-        >
-          {/* <img src={`${person.userDetails.image}`} alt="" /> */}
-          <div className="absolute left-0 bottom-0 bg-black bg-opacity-50 text-white px-2 py-1 rounded text-[10px]">
-            {person.userDetails.name}
-          </div>
-
-          {
-            roomInfo.room.owner === person.uid && (
-              <div className="absolute right-0 top-0 bg-blue-900 text-white px-2 py-1 rounded text-sm">
-                Host
-              </div>
-            )
-          }
-
-          {
-            LoginUser.uid !== person.uid && (
-              isFollowing ? (
-                <div
-                  onClick={() => handleUnFollow(person.uid)}
-                  className="select-none cursor-pointer absolute right-0 bottom-0 bg-gray-900 text-red-400 px-2 py-1 rounded text-sm">
-                  <FaHeartBroken />
-                </div>
-              ) : (
-                <div
-                  onClick={() => handleFollow(person.uid)}
-                  className="select-none cursor-pointer absolute right-0 bottom-0 bg-gray-900 text-blue-400 px-2 py-1 rounded text-sm">
-                  <FaHeart />
-                </div>
-              )
-            )
-          }
-
+return (
+  <div
+    className={`w-full h-full ${
+      isFreindList 
+        ? "border-green-500 border-2"  
+        : "border-gray-500 border-2"   
+    } ${roomInfo.room.owner === person.uid ? 'bg-yellow-900/40' : 'bg-gray-800'}  
+    inline-block rounded p-1 relative`}
+    onMouseEnter={handleMouseEnter}
+    onMouseLeave={() => setShowOptions(false)}
+  >
+    <div className="w-full h-full relative">
+      <div
+        className="h-full w-full relative rounded bg-cover bg-center bg-no-repeat flex items-center justify-center"
+        style={{
+          backgroundImage: `url(${person.userDetails.image})`,
+          backgroundSize: '38% 54%'
+        }}
+      >
+        {/* Name tag */}
+        <div className="absolute left-0 bottom-0 bg-black/60 text-white px-2 py-1 rounded text-[10px]">
+          {person.userDetails.name}
         </div>
-      </div>
-      {showOptions && (
-        <div
-          className="absolute top-0 left-0 w-full h-full bg-gray-800/70 text-white rounded-lg shadow-lg z-[999] 
-        transition-all duration-200 ease-in-out opacity-100 rounded-sm items-center justify-center"
-        >
-          {
-            LoginUser.uid !== person.uid && (
+
+        {/* Host badge */}
+        {roomInfo.room.owner === person.uid && (
+          <div className="absolute right-0 top-0 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold shadow-md">
+            Host
+          </div>
+        )}
+
+        {/* Follow / Unfollow Quick Action */}
+        {LoginUser.uid !== person.uid && (
+          isFollowing ? (
+            <div
+              onClick={() => handleUnFollow(person.uid)}
+              className="select-none cursor-pointer absolute right-0 bottom-0 bg-red-600 hover:bg-red-700 text-white px-2 py-1 rounded text-sm shadow-md"
+              title="Unfollow"
+            >
+              <FaHeartBroken />
+            </div>
+          ) : (
+            <div
+              onClick={() => handleFollow(person.uid)}
+              className="select-none cursor-pointer absolute right-0 bottom-0 bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-sm shadow-md"
+              title="Follow"
+            >
+              <FaHeart />
+            </div>
+          )
+        )}
+
+        {/* Floating menu (appears on hover) */}
+        {showOptions && (
+          <div
+            className="absolute bg-gray-900/90 backdrop-blur-sm text-white rounded-lg shadow-lg flex flex-col overflow-hidden animate-fadeIn"
+          >
+            {LoginUser.uid !== person.uid && (
               isFollowing ? (
                 <button
                   onClick={() => handleUnFollow(person.uid)}
-                  className="w-full select-none cursor-pointer bg-gray-900 text-red-400 text-sm p-[7px] hover:bg-gray-800">
+                  className="px-3 py-1 hover:bg-red-600 text-sm"
+                >
                   Unfollow
                 </button>
               ) : (
                 <button
                   onClick={() => handleFollow(person.uid)}
-                  className="w-full select-none cursor-pointer bg-gray-900 text-blue-400 text-sm p-[7px] hover:bg-gray-800">
+                  className="px-3 py-1 hover:bg-blue-600 text-sm"
+                >
                   Follow
                 </button>
               )
-            )
-          }
-         {
-          LoginUser.uid === roomInfo.room.owner && (<>
-           <button className="block w-full cursor-pointer p-[7px] hover:bg-gray-800 text-sm  bg-gray-900" onClick={() => handleRemovePerson(person.userDetails.name)}>Remove</button>
-           <button className="block w-full cursor-pointer p-[7px] hover:bg-gray-800 text-sm  bg-gray-900" onClick={handleTransferOwnership}>Transfer the ownership</button>
-          </>) 
-         }
-        </div>
-      )}
+            )}
+
+            {LoginUser.uid === roomInfo.room.owner && (
+              <>
+                <button
+                  className="px-3 py-1 hover:bg-red-600 text-sm"
+                  onClick={() => handleRemovePerson(person.userDetails.name)}
+                >
+                  Remove
+                </button>
+                <button
+                  className="px-3 py-1 hover:bg-purple-600 text-sm"
+                  onClick={handleTransferOwnership}
+                >
+                  Transfer Ownership
+                </button>
+              </>
+            )}
+          </div>
+        )}
+      </div>
     </div>
-  )
+  </div>
+);
+
+
 }
 
 export default RoompeopleBox
