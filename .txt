@@ -1,0 +1,20 @@
+Client Request to create room: 
+
+fetch("https://ciclehubackend.onrender.com/api/rooms/create", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    room: {
+      topic: "",
+      language: "English",
+      level: "Beginner",
+      size: 2,
+      owner: "USER_UID_HERE",
+      joinedUsers: []
+    },
+    createdBy: {
+      uid: "USER_UID_HERE",
+      createdAt: new Date().toISOString() // eg: 2026-01-27T00:00:00.000Z
+    }
+  })
+}).then(r => r.json()).then(console.log);
